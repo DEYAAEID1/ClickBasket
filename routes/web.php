@@ -1,8 +1,11 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\ProductImportController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Backend\Admin\CategoriesController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,68 +19,73 @@ use Illuminate\Support\Facades\Route;
 
 
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/', function () {
-    return view('home');
-})->name('home');
-Route::get('/test', function () {
-    return view('test');
-})->name('test');
+    return view('shop.frontend.landing');
+})->name('landing');
+
+
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+    ->name('logout');
+
+Route::post('/import-products', [ProductImportController::class, 
+'import'])->name('products.import'); //الكنترولر المسؤول عن استيراد المنتجات من ملف excel
+
+Route::view('/import', 'shop.backend.importExcel'); // صفحة بسيطة لرفع ملف ال Excel 
+
+
+
+
 
 Route::middleware('auth')->group(function () {
 
+    // صفحة الداشبورد الرئيسية للمستخدم
+    Route::get('/shop/frontend/user', [UserDashboardController::class, 'index'])
+        ->middleware(['verified'])
+        ->name('user.dashboard');
 
-    Route::get('/shop', function () {
-        // TEMP DATA – TO BE REMOVED LATER
+    // صفحة تعديل الحساب في المسار المطلوب
+        Route::get('/shop/frontend/profile', 
+        [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/shop/frontend/profile', 
+    [ProfileController::class, 'update'])->name('profile.update');
 
-        $products = [
-            (object)['name' => 'Test Product 1', 'price' => 100],
-            (object)['name' => 'Test Product 2', 'price' => 150],
-        ];
-        //dd($products);
-        return view('shop.index', compact('products'));
-    })->name('shop.index');
 
-    Route::prefix('profile')->group(function () {
-        Route::get('/', [ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/', [ProfileController::class, 'update'])->name('profile.update');
-        Route::delete('/', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    // روت صفحة الأدمن الرئيسية
+    Route::prefix('admin')->middleware(['verified', 'role:admin'])->group(function () {
+        Route::view('/dashboard', 'shop.backend.admin')->name('admin.dashboard');
+
+        Route::prefix('categories')->group(function () {
+    // عرض صفحة الإدارة
+    Route::get('/', [CategoriesController::class, 'index'])->name('admin.categories.index');
+
+    // إضافة تصنيف رئيسي
+    Route::post('/store', [CategoriesController::class, 'storeCategory'])->name('admin.categories.store');
+    // تعديل تصنيف رئيسي
+    Route::post('/update/{id}', [CategoriesController::class, 'updateCategory'])->name('admin.categories.update');
+    // حذف تصنيف رئيسي
+    Route::delete('/delete/{id}', [CategoriesController::class, 'destroyCategory'])->name('admin.categories.destroy');
+
+    // إضافة تصنيف فرعي
+    Route::post('/sub/store', [CategoriesController::class, 'storeSubcategory'])->name('admin.subcategories.store');
+    // تعديل تصنيف فرعي
+    Route::post('/sub/update/{id}', [CategoriesController::class, 'updateSubcategory'])->name('admin.subcategories.update');
+    // حذف تصنيف فرعي
+    Route::delete('/sub/delete/{id}', [CategoriesController::class, 'destroySubcategory'])->name('admin.subcategories.destroy');
     });
+
+     // نهاية الروتس الخاصين بالادمن
 });
-// TEMP DATA – TO BE REMOVED LATER
-Route::get('/product/{id}', function ($id) {
-    $product = (object)[
-        'id' => $id,
-        'name' => 'Test Product ' . $id,
-        'description' => 'This is a detailed description of Test Product ' . $id . '.',
-        'price' => 99.99,
-        'image' => 'https://via.placeholder.com/600x400',
-    ];
-    return view('product.show', compact('product'));
-})->name('product.show');
-Route::get('/cart', function () {
-    $cartItems = [
-        (object)[
-            'id' => 1,
-            'name' => 'Test Product 1',
-            'price' => 50,
-            'quantity' => 2,
-            'image' => 'https://via.placeholder.com/100',
-        ],
-        (object)[
-            'id' => 2,
-            'name' => 'Test Product 2',
-            'price' => 30,
-            'quantity' => 1,
-            'image' => 'https://via.placeholder.com/100',
-        ],
-    ];
 
-    return view('cart.index', compact('cartItems'));
-})->name('cart.index');
+});
 
+
+
+Route::get('/test', function () {
+    return view('test', ['user' => auth()->user()]);
+})->name('test');
+Route::get('/test2', function () {
+    return view('shop.frontend.user');
+})->name('test2');
 
 
 require __DIR__ . '/auth.php';

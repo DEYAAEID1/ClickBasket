@@ -29,23 +29,37 @@ class RegisteredUserController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+{
+    $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+        'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        'phone' => ['nullable', 'string', 'max:20'],
+        'address' => ['nullable', 'string'],
+        'city' => ['nullable', 'string', 'max:100'],
+        'postal_code' => ['nullable', 'string', 'max:20'],
+        'country' => ['nullable', 'string', 'max:100'],
+        'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'], // 2MB max
+    ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+    
 
-        event(new Registered($user));
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'phone' => $request->phone,
+        'address' => $request->address,
+        'city' => $request->city,
+        'postal_code' => $request->postal_code,
+        'country' => $request->country,
+        
+    ]);
 
-        Auth::login($user);
+    event(new Registered($user));
+    Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
-    }
+    return redirect(RouteServiceProvider::HOME);
+}
+
 }

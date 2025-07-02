@@ -1,47 +1,150 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Login Page</title>
+  <style>
+    body {
+      background: url('/assets/imgs/login.png') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start; /* حتى كل شيء يبدأ من اليسار */
+      flex-direction: row; 
+    }
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+    .side-image-container {
+      width: 310px;       /* <-- تحكم العرض */
+      height: 400px;      /* <-- تحكم الطول */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 95px;  /* مسافة من اليسار (اجعلها 0 إذا بدك تلصق الصورة في الشمال) */
+      margin-right: 280px; /* المسافة بين الصورة وصندوق تسجيل الدخول */
+      background: #f8ecc0;
+      border-radius: 22px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+    }
+    .side-image-container img {
+      max-width: 85%;     /* <-- تحكم عرض الصورة كنسبة من الصندوق */
+      max-height: 85%;    /* <-- تحكم ارتفاع الصورة كنسبة من الصندوق */
+      object-fit: contain;
+      border-radius: 16px;
+    }
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+    .login-container {
+      background: rgba(255, 255, 255, 0.92);
+      padding: 2.5rem 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+      width: 350px;
+    }
+
+    .login-form h2 {
+      margin-bottom: 1.5rem;
+      color: #4e54c8;
+      text-align: center;
+    }
+
+    .input-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 0.4rem;
+      color: #333;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .input-group input:focus {
+      border-color: #4e54c8;
+      outline: none;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      background: #4e54c8;
+      color: #fff;
+      border: none;
+      padding: 0.8rem;
+      font-size: 1.1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button[type="submit"]:hover {
+      background: #5b5fc7;
+    }
+
+    .signup-link {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .signup-link a {
+      color: #4e54c8;
+      text-decoration: none;
+      transition: text-decoration 0.2s;
+    }
+
+    .signup-link a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+        align-items: center;
+      }
+      .side-image-container {
+        margin-left: 0;
+        margin-right: 0;
+        margin-bottom: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- صورة في أقصى الشمال -->
+  <div class="side-image-container">
+   <a href="{{ route('landing') }}" > <img src="/assets/imgs/logo.png" alt="side image"/></a>
+  </div>
+
+  <div class="login-container">
+    <form class="login-form" method="POST" action="{{ route('login') }}">
+      @csrf
+      <h2>Login</h2>
+      @if ($errors->any())
+        <div style="color:red; margin-bottom:10px;">
+          {{ $errors->first() }}
         </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
+      @endif
+      <div class="input-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Enter your email" required autofocus>
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+      </div>
+      <button type="submit">Login</button>
+      <p class="signup-link">Don't have an account? <a href="{{ route('register') }}">Sign up</a></p>
     </form>
-</x-guest-layout>
+  </div>
+</body>
+</html>

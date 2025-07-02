@@ -1,14 +1,55 @@
 import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
-    plugins: [
-        laravel({
-            input: [
-                'resources/css/app.css',
-                'resources/js/app.js',
-            ],
-            refresh: true,
-        }),
-    ],
+  build: {
+    rollupOptions: {
+      input: [
+        'resources/css/app.css',
+        'resources/css/animate.min.css',
+        'resources/css/bootstrap.min.css',
+        'resources/css/bootstrap.rtl.min.css',
+        'resources/css/jquery-ui.css',
+        'resources/css/magnific-popup.css',
+        'resources/css/main.css',
+        'resources/css/normalize.css',
+        'resources/css/perfect-scrollbar.css',
+        'resources/css/select2.min.css',
+        'resources/css/slick.css',
+        'resources/css/slider-range.css',
+        'resources/css/uicons-regular-straight.css',
+        
+        // جميع ملفات الـ JS
+        'resources/js/app.js',
+        'resources/js/bootstrap.bundle.min.js',
+        'resources/js/bootstrap.bundle.min.js.map',
+        'resources/js/bootstrap.js',
+        'resources/js/counterup.js',
+        'resources/js/custom-parallax.js',
+        'resources/js/html2canvas.js',
+        'resources/js/images-loaded.js',
+        'resources/js/invoice.js',
+        'resources/js/isotope.js',
+        'resources/js/jquery-3.6.0.min.js',
+        'resources/js/jquery-migrate-3.3.0.min.js',
+        'resources/js/jquery-ui.js',
+        'resources/js/jquery.countdown.min.js',
+        'resources/js/jquery.elevatezoom.js',
+        'resources/js/jquery.syotimer.min.js',
+        'resources/js/jquery.theia.sticky.js',
+        'resources/js/jquery.vticker-min.js',
+        'resources/js/jspdf.min.js',
+        'resources/js/leaflet.js',
+        'resources/js/magnific-popup.js',
+        'resources/js/perfect-scrollbar.js',
+        'resources/js/scrollup.js',
+        'resources/js/select2.min.js',
+        'resources/js/shop.js',
+        'resources/js/slick.js',
+        'resources/js/slider-range.js',
+        'resources/js/TweenMax.min.js',
+        'resources/js/waypoints.js',
+        'resources/js/wow.js'
+      ],
+    },
+  },
 });
