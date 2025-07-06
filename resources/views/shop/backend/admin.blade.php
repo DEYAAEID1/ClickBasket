@@ -16,6 +16,7 @@
     <!-- Template CSS -->
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/animate.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/landmain.css?v=5.3') }}" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
 <body>
@@ -32,50 +33,33 @@
                         <a href="{{ route('landing') }}"><img src="{{ asset('assets/imgs/logow.png') }}" alt="logo" /></a>
                     </div>
                     <div class="header-right">
-                        <div class="search-style-2">
-                            <form action="#">
-                                <select class="select-active">
-                                    <option>All Categories</option>
-                                    <option>Milks and Dairies</option>
-                                    <option>Wines & Alcohol</option>
-                                    <option>Clothing & Beauty</option>
-                                    <option>Pet Foods & Toy</option>
-                                    <option>Fast food</option>
-                                    <option>Baking material</option>
-                                    <option>Vegetables</option>
-                                    <option>Fresh Seafood</option>
-                                    <option>Noodles & Rice</option>
-                                    <option>Ice cream</option>
-                                </select>
-                                <input type="text" placeholder="Search for items..." />
-                            </form>
-                        </div>
-                        <div class="header-action-right">
-                            <div class="header-action-2">
-                                <div class="search-location">
-                                    <form action="#">
-                                        <select class="select-active">
-                                            <option>Your Location</option>
-                                            <option>Alabama</option>
-                                            <option>Alaska</option>
-                                            <option>Arizona</option>
-                                            <option>Delaware</option>
-                                            <option>Florida</option>
-                                            <option>Georgia</option>
-                                            <option>Hawaii</option>
-                                            <option>Indiana</option>
-                                            <option>Maryland</option>
-                                            <option>Nevada</option>
-                                            <option>New Jersey</option>
-                                            <option>New Mexico</option>
-                                            <option>New York</option>
-                                        </select>
+                        <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block font-heading">
+                            <nav>
+                                <ul>
+                                    <li><a href="{{ route('admin.categories.index') }}">Manage Categories </a></li>
+                                    <li>
+                                        <a href="#"> Manage Products <i class="fi-rs-angle-down"></i></a>
+                                        <ul class="sub-menu">
+                                            <li><a href="#" id="showFormBtn">Add Products</a></li>
+                                            <li><a href="#" id="EditshowFormBtn">Edit Products</a></li>
+                                        </ul>
+                                    </li>
+
+                                    <li>
+                                        <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Log Out</a>
+                                    </li>
+
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                        @csrf
                                     </form>
-                                </div>
+                                </ul>
 
 
-                            </div>
+                            </nav>
+
                         </div>
+
+
                     </div>
                 </div>
             </div>
@@ -91,42 +75,9 @@
             <div class="container">
                 <div class="header-bottom header-bottom-bg-color sticky-bar">
                     <div class="container">
-                        <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block font-heading">
-                            <nav>
-                                <ul>
-                                    <li>
-                                        <a href="#">Users <i class="fi-rs-angle-down"></i></a>
-                                        <ul class="sub-menu">
-                                            <li><a href="page-account.html">All Users</a></li>
-                                            <li><a href="page-account.html">New Users</a></li>
-
-                                        </ul>
-                                    </li>
-
-                                    <li>
-                                        <a href="#"> Products <i class="fi-rs-angle-down"></i></a>
-                                        <ul class="sub-menu">
-                                            <li><a href="page-account.html">All Shop</a></li>
-                                            <li><a href="page-account.html">Recent Sales</a></li>
-                                            <li><a href="page-account.html">Manage Products </a></li>
-                                            <li><a href="{{ route('admin.categories.index') }}">Manage Categories </a></li>
-                                            <li><a href="page-account.html">add discounts </a></li>
-                                        </ul>
-                                    </li>
-                                    <li>
-                                        <form action="{{ route('logout') }}" method="POST" style="display: inline;">
-                                            @csrf
-                                            <button type="submit" class="active">Log Out</button>
-                                        </form>
-
-                                    </li>
-
-                                </ul>
 
 
-                            </nav>
 
-                        </div>
 
                     </div>
                 </div>
@@ -140,48 +91,132 @@
                             <div class="col-md-3">
 
                             </div>
-                            <div class="col-md-9">
-                                <div class="tab-content account dashboard-content pl-50">
-                                    <div class="tab-pane fade active show" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h3 class="mb-0">Hello Rosie!</h3>
-                                            </div>
-                                            <div class="card-body">
 
-                                            </div>
-                                        </div>
+                            <!-- الجزء الخاص باضافة منتج -->
+                            <div id="addProductForm" style="display: none;">
+                                <h3 class="mb-0">Add Product</h3>
+
+
+                                <form action="{{ route('admin.products.create') }}" id="addProductForm" method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    
+
+                                    <div class="form-group">
+                                        <label for="name">Product Name:</label>
+                                        <input type="text" name="name" id="name" placeholder="Enter product name" required>
                                     </div>
 
-                                    <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
-                                        <div class="card">
-                                            <div class="card-header">
-                                                <h3 class="mb-0">Orders tracking</h3>
-                                            </div>
-                                            <div class="card-body contact-from-area">
-                                                <p>To track your order please enter your OrderID in the box below and press "Track" button. This was given to you on your receipt and in the confirmation email you should have received.</p>
-                                                <div class="row">
-                                                    <div class="col-lg-8">
-                                                        <form class="contact-form-style mt-30 mb-50" action="#" method="post">
-                                                            <div class="input-style mb-20">
-                                                                <label>Order ID</label>
-                                                                <input name="order-id" placeholder="Found in your order confirmation email" type="text" />
-                                                            </div>
-                                                            <div class="input-style mb-20">
-                                                                <label>Billing email</label>
-                                                                <input name="billing-email" placeholder="Email you used during checkout" type="email" />
-                                                            </div>
-                                                            <button class="submit submit-auto-width" type="submit">Track</button>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <div class="form-group">
+                                        <label for="description">Description:</label>
+                                        <textarea name="description" id="description" placeholder="Enter product description"></textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="price">Price:</label>
+                                        <input type="number" name="price" id="price" placeholder="Enter product price" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="cost_price">Cost Price:</label>
+                                        <input type="number" name="cost_price" id="cost_price" placeholder="Enter product cost price">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="stock_quantity">Stock Quantity:</label>
+                                        <input type="number" name="stock_quantity" id="stock_quantity" placeholder="Enter product stock quantity" required>
                                     </div>
 
 
-                                </div>
+                                    <div class="form-group">
+                                        <label for="image">Main Image:</label>
+                                        <input type="file" name="image" id="image" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="gallery">Gallery Images (optional):</label>
+                                        <input type="file" name="gallery[]" id="gallery" multiple>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="is_active">Is Active:</label>
+                                        <input type="checkbox" name="is_active" id="is_active">
+                                    </div>
+
+                                    <button type="submit">Add Product</button>
+                                </form>
+
+                                <!-- مكان عرض الرسائل -->
+                                <div id="responseMessage"></div>
                             </div>
+                            <!-- الجزء الخاص بتعديل منتج -->
+
+                            <div id="EditproductForm" style="display: none;">
+                                <h3 class="mb-0">Edit Product</h3>
+                                <!-- Search form -->
+                                <form id="searchProductForm">
+                                    <div class="form-group">
+                                        <label for="product_id">Search Product by ID:</label>
+                                        <input type="number" name="product_id" id="product_id" placeholder="Enter Product ID" required>
+                                        <button type="submit" id="searchProductBtn">Search</button>
+                                    </div>
+                                </form>
+
+                                <!-- Edit Product Form -->
+                                <form action="{{ route('admin.products.update') }}" id="EditproductForm" method="POST" enctype="multipart/form-data">
+                                    @csrf
+                                    @method('PUT')
+                                    
+
+                                    <div class="form-group">
+                                        <label for="name">Product Name:</label>
+                                        <input type="text" name="name" id="Edit_name" placeholder="Enter product name" value="{{ old('name', $product->name ?? '') }}" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="description">Description:</label>
+                                        <textarea name="description" id="Edit_description" placeholder="Enter product description" step="any">{{ old('description', $product->description ?? '') }}</textarea>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="price">Price:</label>
+                                        <input type="number" name="price" id="Edit_price" placeholder="Enter product price" step="any" value="{{ old('price', $product->price ?? '') }}" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="cost_price">Cost Price:</label>
+                                        <input type="number" name="cost_price" id="Edit_cost_price" placeholder="Enter product cost price" step="any" value="{{ old('cost_price', $product->cost_price ?? '') }}">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="stock_quantity">Stock Quantity:</label>
+                                        <input type="number" name="stock_quantity" id="Edit_stock_quantity" placeholder="Enter product stock quantity" step="any" value="{{ old('stock_quantity', $product->stock_quantity ?? '') }}" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="image">Main Image:</label>
+                                        <input type="file" name="image" id="Edit_image" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="gallery">Gallery Images (optional):</label>
+                                        <input type="file" name="gallery[]" id="Edit_gallery" multiple>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="is_active">Is Active:</label>
+                                        <input type="checkbox" name="is_active" id="Edit_is_active" {{ old('is_active', $product->is_active ?? false) ? 'checked' : '' }}>
+                                    </div>
+                                  
+                                    <button type="submit">Edit Product</button>
+                                </form>
+
+
+                                <!-- مكان عرض الرسائل -->
+                                <div id="responseMessage"></div>
+
+                            </div>
+
+
                         </div>
                     </div>
                 </div>
@@ -189,29 +224,115 @@
         </div>
     </main>
 
+    <script>
+        $(document).ready(function() {
+            // إخفاء الفورم بشكل افتراضي
+            $("#addproductForm").hide();
+            $("#EditproductForm").hide();
+            // إرسال الطلب عند الضغط على Search
+            $("#searchProductForm").submit(function(e) {
+                e.preventDefault(); // منع الإرسال الافتراضي للـ form
 
-    <script src="{{ asset('assets/js/vendor/modernizr-3.6.0.min.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/jquery-3.6.0.min.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/jquery-migrate-3.3.0.min.js') }}"></script>
-    <script src="{{ asset('assets/js/vendor/bootstrap.bundle.min.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/slick.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/jquery.syotimer.min.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/waypoints.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/wow.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/perfect-scrollbar.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/magnific-popup.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/select2.min.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/counterup.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/jquery.countdown.min.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/images-loaded.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/isotope.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/scrollup.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/jquery.vticker-min.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/jquery.theia.sticky.js') }}"></script>
-    <script src="{{ asset('assets/js/plugins/jquery.elevatezoom.js') }}"></script>
-    <!-- Template  JS -->
-    <script src="{{ asset('assets/js/main.js?v=5.3') }}"></script>
-    <script src="{{ asset('assets/js/shop.js?v=5.3') }}"></script>
+                // الحصول على ID المنتج من الحقل
+                var productId = $("#product_id").val();
+
+                // إرسال الطلب إلى السيرفر عبر AJAX
+                $.ajax({
+                    url: "{{ route('admin.products.search') }}", // الراوت الذي سيستقبل الطلب
+                    type: "GET",
+                    data: {
+                        product_id: productId
+                    },
+                    success: function(response) {
+                        if (response.product) {
+                            // تعبئة البيانات في الـ form
+                            
+                            $("#Edit_name").val(response.product.name);
+                            $("#Edit_description").val(response.product.description);
+                            $("#Edit_price").val(response.product.price);
+                            $("#Edit_cost_price").val(response.product.cost_price);
+                            $("#Edit_stock_quantity").val(response.product.stock_quantity);
+                            $("#Edit_image").val(response.product.image);
+                            $("#Edit_gallery").val(response.product.gallery);
+                            $("#Edit_is_active").val(response.product.is_active);
+                            
+
+                            // يمكنك إضافة الحقول الأخرى هنا
+                        } else {
+                            // في حال لم يتم العثور على المنتج
+                            $("#responseMessage").html("<p style='color:red;'>Product not found!</p>");
+                        }
+                    },
+                    error: function(xhr) {
+                        $("#responseMessage").html("<p style='color:red;'>Error searching for product. Please try again.</p>");
+                    }
+                });
+            });
+
+
+
+            // إظهار الفورم عند الضغط على زر Add Product
+            $("#EditshowFormBtn").click(function() {
+
+                $("#EditproductForm").toggle();
+            });
+            $("#addProductForm").submit(function(e) {
+                e.preventDefault(); // Prevent the form from refreshing the page
+
+                // Get form data
+                var formData = new FormData(this);
+
+                // Send the data using AJAX
+                $.ajax({
+                    url: "{{ route('admin.products.store') }}", // Add your correct route here
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        $("#responseMessage").html("<p>Product added successfully!</p>").css("color", "green");
+                        $("#productForm").hide();
+                    },
+                    error: function(xhr) {
+                        $("#responseMessage").html("<p>Error adding product. Please try again.</p>").css("color", "red");
+                    }
+                });
+            });
+            $("#showFormBtn").click(function() {
+                $("#addProductForm").toggle();
+
+            });
+
+            // إرسال الفورم باستخدام AJAX
+            $("#addProductForm").submit(function(e) {
+                e.preventDefault(); // منع إعادة تحميل الصفحة
+
+                // الحصول على البيانات من الفورم
+                var formData = new FormData(this);
+
+                // إرسال البيانات باستخدام AJAX
+                $.ajax({
+                    url: "{{ route('admin.products.store') }}",
+                    type: "POST",
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        console.log(response); // قم بمراجعة الرد هنا
+                        $("#responseMessage").html("<p>Product added successfully!</p>").css("color", "green");
+                        $("#productForm").hide();
+                    },
+                    error: function(xhr, status, error) {
+                        console.log("Error status:", status);
+                        console.log("Error:", error);
+                        console.log("Response:", xhr.responseText); // عرض الاستجابة كاملة من السيرفر
+                        $("#responseMessage").html("<p>Error adding product. Please try again.</p>").css("color", "red");
+                    }
+                });
+
+            });
+        });
+    </script>
 </body>
 
 </html>

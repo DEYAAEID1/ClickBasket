@@ -8,32 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
-
+ protected $primaryKey = 'id'; 
     protected $fillable = [
+        
         'category_id',
         'subcategory_id',
         'name',
-        'slug',
         'description',
-        'short_description',
-        'sku',
         'price',
-        'sale_price',
         'cost_price',
         'stock_quantity',
-        'min_quantity',
-        'weight',
-        'dimensions',
         'is_active',
-        'is_featured',
         'manage_stock',
         'stock_status',
         'image',
         'gallery',
-        'meta_title',
-        'meta_description',
-        'rating_average',
-        'rating_count',
     ];
 
     protected $casts = [

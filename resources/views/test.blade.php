@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
+
 <body>
     <h3>Add New Product</h3>
 
@@ -15,6 +17,12 @@
 
     <!-- الفورم (مخفي بشكل افتراضي) -->
     <div id="productForm" style="display: none;">
+        <form action="{{ route('admin.products.edit_delete') }}" method="POST">
+            @csrf
+            <input type="text" name="product_id" placeholder="Enter Product ID" required>
+            <button type="submit">Edit/Delete Product</button>
+        </form>
+
         <form id="addProductForm" method="POST" enctype="multipart/form-data">
             @csrf
 
@@ -48,7 +56,7 @@
                 <select name="subcategory_id" id="subcategory_id" required>
                     <option value="">-- Select Subcategory --</option>
                     @foreach($subcategories as $subcategory)
-                        <option value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
+                    <option value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -78,19 +86,19 @@
     <script>
         // إظهار الفورم عند الضغط على زر Add Product
         $("#showFormBtn").click(function() {
-            $("#productForm").toggle();  // إظهار أو إخفاء الفورم
+            $("#productForm").toggle(); // إظهار أو إخفاء الفورم
         });
 
         // إرسال الفورم باستخدام AJAX
         $("#addProductForm").submit(function(e) {
-            e.preventDefault();  // منع إعادة تحميل الصفحة
+            e.preventDefault(); // منع إعادة تحميل الصفحة
 
             // الحصول على البيانات من الفورم
             var formData = new FormData(this);
 
             // إرسال البيانات باستخدام AJAX
             $.ajax({
-                url: "{{ route('admin.products.store') }}",  // الراوت الذي سيتم إرسال البيانات إليه
+                url: "{{ route('admin.products.store') }}", // الراوت الذي سيتم إرسال البيانات إليه
                 type: "POST",
                 data: formData,
                 processData: false,
@@ -110,4 +118,5 @@
         });
     </script>
 </body>
+
 </html>

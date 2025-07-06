@@ -32,12 +32,6 @@ Route::get('/', function () {
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
 
-
-
-
-
-
-
 Route::middleware('auth')->group(function () {
 
     // صفحة الداشبورد الرئيسية للمستخدم
@@ -46,70 +40,60 @@ Route::middleware('auth')->group(function () {
         ->name('user.dashboard');
 
     // صفحة تعديل الحساب في المسار المطلوب
-        Route::get('/shop/frontend/profile',[ProfileController::class, 'edit'])->name('profile.edit');
-        Route::patch('/shop/frontend/profile',[ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/shop/frontend/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/shop/frontend/profile', [ProfileController::class, 'update'])->name('profile.update');
 
 
-    
+
     //راوت صفحات الأدمن
-   Route::prefix('admin')->middleware(['verified', 'role:admin'])->group(function () {
+    Route::prefix('admin')->middleware(['verified', 'role:admin'])->group(function () {
         Route::view('/dashboard', 'shop.backend.admin')->name('admin.dashboard');
-  
-Route::prefix('categories')->group(function () {
+        Route::get('/products/search', [ProductController::class, 'searchProduct'])->name('admin.products.search');
+        Route::get('/dashboard/products/create', [ProductController::class, 'create'])->name('admin.products.create');
+        Route::post('/dashboard/products/store', [ProductController::class, 'store'])->name('admin.products.store');
+        Route::post('/products/edit/delete', [ProductController::class, 'editDeleteProduct'])->name('admin.products.edit_delete');
+        Route::put('/products', [ProductController::class, 'updateProduct'])->name('admin.products.update');
+        Route::delete('/products/{id}', [ProductController::class, 'deleteProduct'])->name('admin.products.delete');
+
+        Route::prefix('categories')->group(function () {
 
 
-    // جلب الفئات الفرعية باستخدام AJAX
-    Route::get('/{categoryid}/subcategories', [CategoriesController::class, 'getSubcategories']);
+            // جلب الفئات الفرعية باستخدام AJAX
+            Route::get('/{categoryid}/subcategories', [CategoriesController::class, 'getSubcategories']);
 
-    // عرض جميع الفئات
-    Route::get('/', [CategoriesController::class, 'index'])->name('admin.categories.index');
-               
-    // إضافة فئة رئيسية
-    Route::get('/create', [CategoriesController::class, 'createcategories'])->name('admin.categories.create');
-    Route::post('/categories/store', [CategoriesController::class, 'storeCategory'])->name('admin.categories.store');
-    // تعديل فئة رئيسية
-    Route::get('/categories/edit/{id}', [CategoriesController::class, 'editcategory'])->name('admin.categories.edit');
-    Route::put('/update/{id}', [CategoriesController::class, 'updateCategory'])->name('admin.categories.update');
-                  
-    // حذف فئة رئيسية
-    Route::delete('/delete/{id}', [CategoriesController::class, 'destroyCategory'])->name('admin.categories.destroy');
+            // عرض جميع الفئات
+            Route::get('/', [CategoriesController::class, 'index'])->name('admin.categories.index');
 
-    // إضافة فئة فرعية
+            // إضافة فئة رئيسية
+            Route::get('/create', [CategoriesController::class, 'createcategories'])->name('admin.categories.create');
+            Route::post('/categories/store', [CategoriesController::class, 'storeCategory'])->name('admin.categories.store');
+            // تعديل فئة رئيسية
+            Route::get('/categories/edit/{id}', [CategoriesController::class, 'editcategory'])->name('admin.categories.edit');
+            Route::put('/update/{id}', [CategoriesController::class, 'updateCategory'])->name('admin.categories.update');
 
-    Route::get('/categories/create', [CategoriesController::class, 'createsubcategories'])->name('admin.subcategories.create');
-    Route::post('/sub/store', [CategoriesController::class, 'storeSubcategory'])->name('admin.subcategories.store');
+            // حذف فئة رئيسية
+            Route::delete('/delete/{id}', [CategoriesController::class, 'destroyCategory'])->name('admin.categories.destroy');
 
-    // تعديل فئة فرعية
-    Route::get('/subcategories/edit/{id}', [CategoriesController::class, 'editSubcategory'])->name('admin.subcategories.edit');
-    Route::get('/{categoryid}/subcategories/{id}/edit', [CategoriesController::class, 'editSubcategory'])->name('admin.subcategories.edit');
+            // إضافة فئة فرعية
 
-    Route::put('/sub/update/{id}', [CategoriesController::class, 'updateSubcategory'])->name('admin.subcategories.update');
+            Route::get('/categories/create', [CategoriesController::class, 'createsubcategories'])->name('admin.subcategories.create');
+            Route::post('/sub/store', [CategoriesController::class, 'storeSubcategory'])->name('admin.subcategories.store');
 
-    // تعديل عرض فئة فرعية
+            // تعديل فئة فرعية
+            Route::get('/subcategories/edit/{id}', [CategoriesController::class, 'editSubcategory'])->name('admin.subcategories.edit');
+            Route::get('/{categoryid}/subcategories/{id}/edit', [CategoriesController::class, 'editSubcategory'])->name('admin.subcategories.edit');
 
-    // حذف فئة فرعية
-    Route::delete('/sub/delete/{id}', [CategoriesController::class, 'destroySubcategory'])->name('admin.subcategories.destroy');
-});
-Route::prefix('/products')->group(function () {
+            Route::put('/sub/update/{id}', [CategoriesController::class, 'updateSubcategory'])->name('admin.subcategories.update');
 
-    //انشاء منتج
-Route::get('/admin/products/create', [ProductController::class, 'create'])->name('admin.products.create');
-Route::post('/admin/products', [ProductController::class, 'store'])->name('admin.products.store');
-// تعديل منتج
-Route::post('/admin/products/edit/delete', [ProductController::class, 'editDeleteProduct'])->name('admin.products.edit.delete');
-Route::put('/admin/products/{id}', [ProductController::class, 'updateProduct'])->name('admin.products.update');
-// حذف منتج
-Route::delete('/admin/products/{id}', [ProductController::class, 'deleteProduct'])->name('admin.products.delete');
+            // تعديل عرض فئة فرعية
 
-
-
-
-
+            // حذف فئة فرعية
+            Route::delete('/sub/delete/{id}', [CategoriesController::class, 'destroySubcategory'])->name('admin.subcategories.destroy');
+        });
+    });
 });
 
-});
 
-});
 
 Route::get('/test', function () {
     $categories = Category::all();
