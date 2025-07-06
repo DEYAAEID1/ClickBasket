@@ -2,10 +2,14 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserDashboardController;
-use App\Http\Controllers\ProductImportController;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Backend\Admin\CategoriesController;
+use App\Http\Controllers\Backend\Admin\ProductController;
+use App\Models\Category;
+use App\Models\Product;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,17 +24,15 @@ use App\Http\Controllers\Backend\Admin\CategoriesController;
 
 
 Route::get('/', function () {
-    return view('shop.frontend.landing');
+    $products = Product::with('category')->orderBy('id')->get();
+    return view('shop.frontend.landing', compact('products'));
 })->name('landing');
 
 
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
     ->name('logout');
 
-Route::post('/import-products', [ProductImportController::class, 
-'import'])->name('products.import'); //الكنترولر المسؤول عن استيراد المنتجات من ملف excel
 
-Route::view('/import', 'shop.backend.importExcel'); // صفحة بسيطة لرفع ملف ال Excel 
 
 
 
@@ -44,44 +46,74 @@ Route::middleware('auth')->group(function () {
         ->name('user.dashboard');
 
     // صفحة تعديل الحساب في المسار المطلوب
-        Route::get('/shop/frontend/profile', 
-        [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/shop/frontend/profile', 
-    [ProfileController::class, 'update'])->name('profile.update');
+        Route::get('/shop/frontend/profile',[ProfileController::class, 'edit'])->name('profile.edit');
+        Route::patch('/shop/frontend/profile',[ProfileController::class, 'update'])->name('profile.update');
 
 
-    // روت صفحة الأدمن الرئيسية
-    Route::prefix('admin')->middleware(['verified', 'role:admin'])->group(function () {
+    
+    //راوت صفحات الأدمن
+   Route::prefix('admin')->middleware(['verified', 'role:admin'])->group(function () {
         Route::view('/dashboard', 'shop.backend.admin')->name('admin.dashboard');
+  
+Route::prefix('categories')->group(function () {
 
-        Route::prefix('categories')->group(function () {
-    // عرض صفحة الإدارة
+
+    // جلب الفئات الفرعية باستخدام AJAX
+    Route::get('/{categoryid}/subcategories', [CategoriesController::class, 'getSubcategories']);
+
+    // عرض جميع الفئات
     Route::get('/', [CategoriesController::class, 'index'])->name('admin.categories.index');
-
-    // إضافة تصنيف رئيسي
-    Route::post('/store', [CategoriesController::class, 'storeCategory'])->name('admin.categories.store');
-    // تعديل تصنيف رئيسي
-    Route::post('/update/{id}', [CategoriesController::class, 'updateCategory'])->name('admin.categories.update');
-    // حذف تصنيف رئيسي
+               
+    // إضافة فئة رئيسية
+    Route::get('/create', [CategoriesController::class, 'createcategories'])->name('admin.categories.create');
+    Route::post('/categories/store', [CategoriesController::class, 'storeCategory'])->name('admin.categories.store');
+    // تعديل فئة رئيسية
+    Route::get('/categories/edit/{id}', [CategoriesController::class, 'editcategory'])->name('admin.categories.edit');
+    Route::put('/update/{id}', [CategoriesController::class, 'updateCategory'])->name('admin.categories.update');
+                  
+    // حذف فئة رئيسية
     Route::delete('/delete/{id}', [CategoriesController::class, 'destroyCategory'])->name('admin.categories.destroy');
 
-    // إضافة تصنيف فرعي
+    // إضافة فئة فرعية
+
+    Route::get('/categories/create', [CategoriesController::class, 'createsubcategories'])->name('admin.subcategories.create');
     Route::post('/sub/store', [CategoriesController::class, 'storeSubcategory'])->name('admin.subcategories.store');
-    // تعديل تصنيف فرعي
-    Route::post('/sub/update/{id}', [CategoriesController::class, 'updateSubcategory'])->name('admin.subcategories.update');
-    // حذف تصنيف فرعي
+
+    // تعديل فئة فرعية
+    Route::get('/subcategories/edit/{id}', [CategoriesController::class, 'editSubcategory'])->name('admin.subcategories.edit');
+    Route::get('/{categoryid}/subcategories/{id}/edit', [CategoriesController::class, 'editSubcategory'])->name('admin.subcategories.edit');
+
+    Route::put('/sub/update/{id}', [CategoriesController::class, 'updateSubcategory'])->name('admin.subcategories.update');
+
+    // تعديل عرض فئة فرعية
+
+    // حذف فئة فرعية
     Route::delete('/sub/delete/{id}', [CategoriesController::class, 'destroySubcategory'])->name('admin.subcategories.destroy');
-    });
+});
+Route::prefix('/products')->group(function () {
 
-     // نهاية الروتس الخاصين بالادمن
+    //انشاء منتج
+Route::get('/admin/products/create', [ProductController::class, 'create'])->name('admin.products.create');
+Route::post('/admin/products', [ProductController::class, 'store'])->name('admin.products.store');
+// تعديل منتج
+Route::post('/admin/products/edit/delete', [ProductController::class, 'editDeleteProduct'])->name('admin.products.edit.delete');
+Route::put('/admin/products/{id}', [ProductController::class, 'updateProduct'])->name('admin.products.update');
+// حذف منتج
+Route::delete('/admin/products/{id}', [ProductController::class, 'deleteProduct'])->name('admin.products.delete');
+
+
+
+
+
 });
 
 });
 
-
+});
 
 Route::get('/test', function () {
-    return view('test', ['user' => auth()->user()]);
+    $categories = Category::all();
+    return view('test', compact('categories'));
 })->name('test');
 Route::get('/test2', function () {
     return view('shop.frontend.user');

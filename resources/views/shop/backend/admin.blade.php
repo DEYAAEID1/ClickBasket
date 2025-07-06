@@ -109,12 +109,15 @@
                                             <li><a href="page-account.html">All Shop</a></li>
                                             <li><a href="page-account.html">Recent Sales</a></li>
                                             <li><a href="page-account.html">Manage Products </a></li>
-                                            <li><a href="page-account.html">Manage Categories </a></li>
+                                            <li><a href="{{ route('admin.categories.index') }}">Manage Categories </a></li>
                                             <li><a href="page-account.html">add discounts </a></li>
                                         </ul>
                                     </li>
                                     <li>
-                                        <a class="active" href="index.html">Log Out </a>
+                                        <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                                            @csrf
+                                            <button type="submit" class="active">Log Out</button>
+                                        </form>
 
                                     </li>
 

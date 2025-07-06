@@ -1,64 +1,113 @@
-<section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Profile Information') }}
-        </h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Product</title>
+    <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h3>Add New Product</h3>
 
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
-        </p>
-    </header>
+    <!-- زر لإظهار الفورم -->
+    <button id="showFormBtn">Add Product</button>
 
-    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
-        @csrf
-    </form>
+    <!-- الفورم (مخفي بشكل افتراضي) -->
+    <div id="productForm" style="display: none;">
+        <form id="addProductForm" method="POST" enctype="multipart/form-data">
+            @csrf
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
-        @csrf
-        @method('patch')
+            <div class="form-group">
+                <label for="name">Product Name:</label>
+                <input type="text" name="name" id="name" placeholder="Enter product name" required>
+            </div>
 
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
-        </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <textarea name="description" id="description" placeholder="Enter product description"></textarea>
+            </div>
 
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
+            <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="number" name="price" id="price" placeholder="Enter product price" required>
+            </div>
 
-            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <div>
-                    <p class="text-sm mt-2 text-gray-800">
-                        {{ __('Your email address is unverified.') }}
+            <div class="form-group">
+                <label for="cost_price">Cost Price:</label>
+                <input type="number" name="cost_price" id="cost_price" placeholder="Enter product cost price">
+            </div>
 
-                        <button form="send-verification" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {{ __('Click here to re-send the verification email.') }}
-                        </button>
-                    </p>
+            <div class="form-group">
+                <label for="stock_quantity">Stock Quantity:</label>
+                <input type="number" name="stock_quantity" id="stock_quantity" placeholder="Enter product stock quantity" required>
+            </div>
 
-                    @if (session('status') === 'verification-link-sent')
-                        <p class="mt-2 font-medium text-sm text-green-600">
-                            {{ __('A new verification link has been sent to your email address.') }}
-                        </p>
-                    @endif
-                </div>
-            @endif
-        </div>
+            <div class="form-group">
+                <label for="subcategory_id">Select Subcategory:</label>
+                <select name="subcategory_id" id="subcategory_id" required>
+                    <option value="">-- Select Subcategory --</option>
+                    @foreach($subcategories as $subcategory)
+                        <option value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+            <div class="form-group">
+                <label for="image">Main Image:</label>
+                <input type="file" name="image" id="image" required>
+            </div>
 
-            @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Saved.') }}</p>
-            @endif
-        </div>
-    </form>
-</section>
+            <div class="form-group">
+                <label for="gallery">Gallery Images (optional):</label>
+                <input type="file" name="gallery[]" id="gallery" multiple>
+            </div>
+
+            <div class="form-group">
+                <label for="is_active">Is Active:</label>
+                <input type="checkbox" name="is_active" id="is_active">
+            </div>
+
+            <button type="submit">Add Product</button>
+        </form>
+
+        <!-- مكان عرض الرسائل -->
+        <div id="responseMessage"></div>
+    </div>
+
+    <script>
+        // إظهار الفورم عند الضغط على زر Add Product
+        $("#showFormBtn").click(function() {
+            $("#productForm").toggle();  // إظهار أو إخفاء الفورم
+        });
+
+        // إرسال الفورم باستخدام AJAX
+        $("#addProductForm").submit(function(e) {
+            e.preventDefault();  // منع إعادة تحميل الصفحة
+
+            // الحصول على البيانات من الفورم
+            var formData = new FormData(this);
+
+            // إرسال البيانات باستخدام AJAX
+            $.ajax({
+                url: "{{ route('admin.products.store') }}",  // الراوت الذي سيتم إرسال البيانات إليه
+                type: "POST",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    // عرض رسالة النجاح أو الفشل
+                    $("#responseMessage").html("<p>Product added successfully!</p>").css("color", "green");
+
+                    // إخفاء الفورم بعد النجاح
+                    $("#productForm").hide();
+                },
+                error: function(xhr) {
+                    // عرض رسالة الخطأ
+                    $("#responseMessage").html("<p>Error adding product. Please try again.</p>").css("color", "red");
+                }
+            });
+        });
+    </script>
+</body>
+</html>
