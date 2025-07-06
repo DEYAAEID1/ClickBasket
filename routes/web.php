@@ -47,12 +47,12 @@ Route::middleware('auth')->group(function () {
 
     //راوت صفحات الأدمن
     Route::prefix('admin')->middleware(['verified', 'role:admin'])->group(function () {
-        Route::view('/dashboard', 'shop.backend.admin')->name('admin.dashboard');
+        Route::get('/dashboard', [ProductController::class, 'dashboard'])->name('admin.dashboard');
         Route::get('/products/search', [ProductController::class, 'searchProduct'])->name('admin.products.search');
         Route::get('/dashboard/products/create', [ProductController::class, 'create'])->name('admin.products.create');
         Route::post('/dashboard/products/store', [ProductController::class, 'store'])->name('admin.products.store');
         Route::post('/products/edit/delete', [ProductController::class, 'editDeleteProduct'])->name('admin.products.edit_delete');
-        Route::put('/products', [ProductController::class, 'updateProduct'])->name('admin.products.update');
+        Route::put('/products/{id}', [ProductController::class, 'updateProduct'])->name('admin.products.update');
         Route::delete('/products/{id}', [ProductController::class, 'deleteProduct'])->name('admin.products.delete');
 
         Route::prefix('categories')->group(function () {

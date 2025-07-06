@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use App\Models\Subcategory;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -21,6 +22,12 @@ public function searchProduct(Request $request)
     } else {
         return response()->json(['product' => null]); // إذا لم يتم العثور على المنتج
     }
+}
+
+public function dashboard()
+{
+    $categories = Category::all();
+    return view('shop.backend.admin', compact('categories'));
 }
 
 
@@ -41,41 +48,58 @@ public function searchProduct(Request $request)
     }
    public function updateProduct(Request $request, $id)
 {
-    // البحث عن المنتج بواسطة ID
+    // البحث عن المنتج
     $product = Product::find($id);
-    
-    if ($product) {
-        // تحديث البيانات للمنتج
-        $product->name = $request->name;
-        $product->description = $request->description;
-        $product->price = $request->price;
-        $product->cost_price = $request->cost_price;
-        $product->stock_quantity = $request->stock_quantity;
-        $product->is_active = $request->has('is_active') ? 1 : 0; // إذا كان هناك "is_active" فاجعلها 1، وإلا اجعلها 0.
-        
-        // إضافة معالجة الصورة الرئيسية (إذا كانت موجودة)
-        if ($request->hasFile('image')) {
+
+    if (!$product) {
+        return response()->json(['message' => 'Product not found'], 404);
+    }
+
+    // التحقق من صحة البيانات
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'price' => 'required|numeric',
+        'cost_price' => 'nullable|numeric',
+        'stock_quantity' => 'required|integer',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // nullable because it might not be updated
+        'gallery' => 'nullable|array',
+        'gallery.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        'category_id' => 'required|exists:categories,id',
+        'subcategory_id' => 'required|exists:subcategories,id',
+        // 'is_active' is handled by has()
+    ]);
+
+    // تحديث المنتج
+    $product->name = $validated['name'];
+    $product->description = $validated['description'];
+    $product->price = $validated['price'];
+    $product->cost_price = $validated['cost_price'];
+    $product->stock_quantity = $validated['stock_quantity'];
+    $product->category_id = $validated['category_id'];
+    $product->subcategory_id = $validated['subcategory_id'];
+    $product->is_active = $request->has('is_active') ? 1 : 0;
+
+     if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('products', 'public');
             $product->image = $imagePath;
         }
 
-        // إضافة معالجة الصور المرفقة (إذا كانت موجودة)
-        if ($request->hasFile('gallery')) {
-            $gallery = [];
-            foreach ($request->file('gallery') as $file) {
-                $gallery[] = $file->store('products/gallery', 'public');
-            }
-            $product->gallery = json_encode($gallery); // حفظها بتنسيق JSON في قاعدة البيانات
+    if ($request->hasFile('gallery')) {
+        $galleryPaths = [];
+        foreach ($request->file('gallery') as $file) {
+            $galleryPaths[] = $file->store('products/gallery', 'public');
         }
-
-        // حفظ التعديلات في قاعدة البيانات
-        $product->save();
-
-        return response()->json(['message' => 'Product updated successfully!', 'product' => $product]);
-    } else {
-        return response()->json(['message' => 'Product not found.']);
+        $product->gallery = $galleryPaths; // The model will cast this to JSON
     }
+
+    // حفظ التعديلات في قاعدة البيانات
+    $product->save();
+
+    return response()->json(['message' => 'Product updated successfully!', 'product' => $product]);
 }
+
+
 
 
     public function deleteProduct($id)
@@ -138,4 +162,3 @@ public function searchProduct(Request $request)
 }
 
 }
-

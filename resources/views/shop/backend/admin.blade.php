@@ -7,6 +7,7 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta property="og:title" content="" />
     <meta property="og:type" content="" />
     <meta property="og:url" content="" />
@@ -97,13 +98,30 @@
                                 <h3 class="mb-0">Add Product</h3>
 
 
-                                <form action="{{ route('admin.products.create') }}" id="addProductForm" method="POST" enctype="multipart/form-data">
+                                <form id="add_product_form_element" method="POST" enctype="multipart/form-data">
                                     @csrf
-                                    
+
 
                                     <div class="form-group">
                                         <label for="name">Product Name:</label>
                                         <input type="text" name="name" id="name" placeholder="Enter product name" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="add_category_id">Main Category:</label>
+                                        <select name="category_id" id="add_category_id" class="form-control" required>
+                                            <option value="">-- Select Category --</option>
+                                            @foreach($categories as $category)
+                                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="add_subcategory_id">Subcategory:</label>
+                                        <select name="subcategory_id" id="add_subcategory_id" class="form-control" required>
+                                            <option value="">-- Select Main Category First --</option>
+                                        </select>
                                     </div>
 
                                     <div class="form-group">
@@ -113,23 +131,23 @@
 
                                     <div class="form-group">
                                         <label for="price">Price:</label>
-                                        <input type="number" name="price" id="price" placeholder="Enter product price" required>
+                                        <input type="number" name="price" id="price" placeholder="Enter product price" step="any" required>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="cost_price">Cost Price:</label>
-                                        <input type="number" name="cost_price" id="cost_price" placeholder="Enter product cost price">
+                                        <input type="number" name="cost_price" id="cost_price" placeholder="Enter product cost price" step="any">
                                     </div>
 
                                     <div class="form-group">
                                         <label for="stock_quantity">Stock Quantity:</label>
-                                        <input type="number" name="stock_quantity" id="stock_quantity" placeholder="Enter product stock quantity" required>
+                                        <input type="number" name="stock_quantity" id="stock_quantity" placeholder="Enter product stock quantity" step="any" required>
                                     </div>
 
 
                                     <div class="form-group">
                                         <label for="image">Main Image:</label>
-                                        <input type="file" name="image" id="image" required>
+                                        <input type="file" name="image" id="image">
                                     </div>
 
                                     <div class="form-group">
@@ -146,7 +164,7 @@
                                 </form>
 
                                 <!-- مكان عرض الرسائل -->
-                                <div id="responseMessage"></div>
+                                <div id="addResponseMessage"></div>
                             </div>
                             <!-- الجزء الخاص بتعديل منتج -->
 
@@ -154,6 +172,7 @@
                                 <h3 class="mb-0">Edit Product</h3>
                                 <!-- Search form -->
                                 <form id="searchProductForm">
+                                    @csrf
                                     <div class="form-group">
                                         <label for="product_id">Search Product by ID:</label>
                                         <input type="number" name="product_id" id="product_id" placeholder="Enter Product ID" required>
@@ -161,15 +180,33 @@
                                     </div>
                                 </form>
 
+
                                 <!-- Edit Product Form -->
-                                <form action="{{ route('admin.products.update') }}" id="EditproductForm" method="POST" enctype="multipart/form-data">
+                                <form action="{{ isset($product) ? route('admin.products.update', $product->id) : '' }}" id="Editproduct" method="POST" enctype="multipart/form-data">
                                     @csrf
                                     @method('PUT')
-                                    
+
 
                                     <div class="form-group">
                                         <label for="name">Product Name:</label>
                                         <input type="text" name="name" id="Edit_name" placeholder="Enter product name" value="{{ old('name', $product->name ?? '') }}" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="Edit_category_id">Main Category:</label>
+                                        <select name="category_id" id="Edit_category_id" class="form-control" required>
+                                            <option value="">-- Select Category --</option>
+                                            @foreach($categories as $category)
+                                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="Edit_subcategory_id">Subcategory:</label>
+                                        <select name="subcategory_id" id="Edit_subcategory_id" class="form-control" required>
+                                            <option value="">-- Select Main Category First --</option>
+                                        </select>
                                     </div>
 
                                     <div class="form-group">
@@ -194,7 +231,7 @@
 
                                     <div class="form-group">
                                         <label for="image">Main Image:</label>
-                                        <input type="file" name="image" id="Edit_image" required>
+                                        <input type="file" name="image" id="Edit_image">
                                     </div>
 
                                     <div class="form-group">
@@ -206,13 +243,14 @@
                                         <label for="is_active">Is Active:</label>
                                         <input type="checkbox" name="is_active" id="Edit_is_active" {{ old('is_active', $product->is_active ?? false) ? 'checked' : '' }}>
                                     </div>
-                                  
+
                                     <button type="submit">Edit Product</button>
+
                                 </form>
 
 
                                 <!-- مكان عرض الرسائل -->
-                                <div id="responseMessage"></div>
+                                <div id="editResponseMessage"></div>
 
                             </div>
 
@@ -225,49 +263,162 @@
     </main>
 
     <script>
+        // في ملف: resources/views/shop/backend/admin.blade.php
+        $("#Edit_category_id").change(function() {
+            var categoryId = $(this).val(); // الحصول على ID الفئة المختارة
+            // ...
+            $.ajax({
+                url: '/admin/categories/' + categoryId + '/subcategories', // إرسال الطلب لهذا المسار
+                type: 'GET',
+                success: function(data) {
+                    // ... (هنا يتم ملء القائمة الثانية بالبيانات القادمة من الخادم)
+                    var subcategorySelect = $("#Edit_subcategory_id");
+                    subcategorySelect.empty(); // تفريغ القائمة القديمة
+                    // إضافة الخيارات الجديدة
+                    $.each(data.subcategories, function(key, value) {
+                        subcategorySelect.append('<option value="' + value.id + '">' + value.name + '</option>');
+                    });
+                }
+            });
+        });
+        
         $(document).ready(function() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
             // إخفاء الفورم بشكل افتراضي
             $("#addproductForm").hide();
             $("#EditproductForm").hide();
+            var productId = null; // global id to use it in the defrent function
             // إرسال الطلب عند الضغط على Search
             $("#searchProductForm").submit(function(e) {
                 e.preventDefault(); // منع الإرسال الافتراضي للـ form
 
                 // الحصول على ID المنتج من الحقل
-                var productId = $("#product_id").val();
+                var productIdInput = $("#product_id").val();
 
                 // إرسال الطلب إلى السيرفر عبر AJAX
                 $.ajax({
                     url: "{{ route('admin.products.search') }}", // الراوت الذي سيستقبل الطلب
                     type: "GET",
                     data: {
-                        product_id: productId
+                        product_id: productIdInput
                     },
                     success: function(response) {
                         if (response.product) {
+                            var product = response.product;
                             // تعبئة البيانات في الـ form
-                            
-                            $("#Edit_name").val(response.product.name);
-                            $("#Edit_description").val(response.product.description);
-                            $("#Edit_price").val(response.product.price);
-                            $("#Edit_cost_price").val(response.product.cost_price);
-                            $("#Edit_stock_quantity").val(response.product.stock_quantity);
-                            $("#Edit_image").val(response.product.image);
-                            $("#Edit_gallery").val(response.product.gallery);
-                            $("#Edit_is_active").val(response.product.is_active);
-                            
+                            $("#Edit_name").val(product.name);
+                            $("#Edit_description").val(product.description);
+                            $("#Edit_price").val(product.price);
+                            $("#Edit_cost_price").val(product.cost_price);
+                            $("#Edit_stock_quantity").val(product.stock_quantity);
+                            $("#Edit_is_active").prop('checked', product.is_active);
 
-                            // يمكنك إضافة الحقول الأخرى هنا
+                            productId = product.id; // save id in a global productId
+
+                            // تعيين الفئة الرئيسية وجلب الفئات الفرعية
+                            var categoryId = product.category_id;
+                            $("#Edit_category_id").val(categoryId);
+
+                            // جلب الفئات الفرعية وتحديد الفئة الفرعية للمنتج
+                            if (categoryId) {
+                                $.ajax({
+                                    url: '/admin/categories/' + categoryId + '/subcategories',
+                                    type: 'GET',
+                                    success: function(data) {
+                                        var subcategorySelect = $("#Edit_subcategory_id");
+                                        subcategorySelect.empty();
+                                        subcategorySelect.append('<option value="">Select Subcategory</option>');
+                                        $.each(data.subcategories, function(key, value) {
+                                            subcategorySelect.append('<option value="' + value.id + '">' + value.name + '</option>');
+                                        });
+                                        // تحديد الفئة الفرعية الحالية للمنتج
+                                        subcategorySelect.val(product.subcategory_id);
+                                    }
+                                });
+                            } else {
+                                $("#Edit_subcategory_id").empty().append('<option value="">Select Main Category First</option>');
+                            }
+
+                            // تحديث الرابط باستخدام الـ productIdInput الذي تم العثور عليه
+                            var updateUrl = "{{ route('admin.products.update', ':id') }}";
+                            updateUrl = updateUrl.replace(':id', product.id); // استخدام الـ id من الـ response
+
+                            console.log("Updated URL:", updateUrl); // تحقق من الـ URL المحدث
+
+                            // إخفاء أو عرض الفورم بشكل مناسب
+                            $("#EditproductForm").show();
                         } else {
                             // في حال لم يتم العثور على المنتج
-                            $("#responseMessage").html("<p style='color:red;'>Product not found!</p>");
+                            $("#editResponseMessage").html("<p style='color:red;'>Product not found!</p>");
                         }
                     },
+
                     error: function(xhr) {
-                        $("#responseMessage").html("<p style='color:red;'>Error searching for product. Please try again.</p>");
+                        $("#editResponseMessage").html("<p style='color:red;'>Error searching for product. Please try again.</p>");
                     }
                 });
             });
+
+            // جلب الفئات الفرعية عند تغيير الفئة الرئيسية
+            $("#Edit_category_id").change(function() {
+                var categoryId = $(this).val();
+                var subcategorySelect = $("#Edit_subcategory_id");
+
+                subcategorySelect.html('<option value="">Loading...</option>');
+
+                if (!categoryId) {
+                    subcategorySelect.html('<option value="">Select Main Category First</option>');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/admin/categories/' + categoryId + '/subcategories', // تأكد من أن هذا المسار صحيح
+                    type: 'GET',
+                    success: function(data) {
+                        subcategorySelect.empty();
+                        subcategorySelect.append('<option value="">Select Subcategory</option>');
+                        $.each(data.subcategories, function(key, value) {
+                            subcategorySelect.append('<option value="' + value.id + '">' + value.name + '</option>');
+                        });
+                    },
+                    error: function() {
+                        subcategorySelect.html('<option value="">Could not load subcategories</option>');
+                    }
+                });
+            });
+
+            // جلب الفئات الفرعية عند تغيير الفئة الرئيسية في فورم الإضافة
+            $("#add_category_id").change(function() {
+                var categoryId = $(this).val();
+                var subcategorySelect = $("#add_subcategory_id");
+
+                subcategorySelect.html('<option value="">Loading...</option>');
+
+                if (!categoryId) {
+                    subcategorySelect.html('<option value="">Select Main Category First</option>');
+                    return;
+                }
+
+                $.ajax({
+                    url: '/admin/categories/' + categoryId + '/subcategories', // تأكد من أن هذا المسار صحيح
+                    type: 'GET',
+                    success: function(data) {
+                        subcategorySelect.empty();
+                        subcategorySelect.append('<option value="">Select Subcategory</option>');
+                        $.each(data.subcategories, function(key, value) {
+                            subcategorySelect.append('<option value="' + value.id + '">' + value.name + '</option>');
+                        });
+                    },
+                    error: function() {
+                        subcategorySelect.html('<option value="">Could not load subcategories</option>');
+                    }
+                });
+            });
+
 
 
 
@@ -276,61 +427,131 @@
 
                 $("#EditproductForm").toggle();
             });
-            $("#addProductForm").submit(function(e) {
-                e.preventDefault(); // Prevent the form from refreshing the page
 
-                // Get form data
-                var formData = new FormData(this);
-
-                // Send the data using AJAX
-                $.ajax({
-                    url: "{{ route('admin.products.store') }}", // Add your correct route here
-                    type: "POST",
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(response) {
-                        $("#responseMessage").html("<p>Product added successfully!</p>").css("color", "green");
-                        $("#productForm").hide();
-                    },
-                    error: function(xhr) {
-                        $("#responseMessage").html("<p>Error adding product. Please try again.</p>").css("color", "red");
-                    }
-                });
-            });
             $("#showFormBtn").click(function() {
                 $("#addProductForm").toggle();
 
             });
 
-            // إرسال الفورم باستخدام AJAX
-            $("#addProductForm").submit(function(e) {
-                e.preventDefault(); // منع إعادة تحميل الصفحة
-
-                // الحصول على البيانات من الفورم
+            // إرسال فورم الإضافة باستخدام AJAX
+            $("#add_product_form_element").submit(function(e) {
+                e.preventDefault();
                 var formData = new FormData(this);
 
-                // إرسال البيانات باستخدام AJAX
                 $.ajax({
                     url: "{{ route('admin.products.store') }}",
-                    type: "POST",
+                    type: 'POST',
                     data: formData,
                     processData: false,
                     contentType: false,
                     success: function(response) {
-                        console.log(response); // قم بمراجعة الرد هنا
-                        $("#responseMessage").html("<p>Product added successfully!</p>").css("color", "green");
-                        $("#productForm").hide();
+                        // إخفاء الفورم
+                        $("#add_product_form_element").hide();
+
+                        // عرض رسالة النجاح
+                        $("#addResponseMessage")
+                            .html("<p style='color: green; text-align: center; font-size: 1.2em;'>Product added successfully!</p>")
+                            .show();
+
+                        // بعد 10 ثوانٍ، إخفاء الحاوية بالكامل وإعادة تهيئتها
+                        setTimeout(function() {
+                            $("#addProductForm").hide(); // إخفاء الحاوية بالكامل
+                            $("#add_product_form_element")[0].reset(); // إعادة تعيين الفورم
+                            $("#add_subcategory_id").empty().append('<option value="">-- Select Main Category First --</option>');
+                            $("#addResponseMessage").empty().hide(); // إفراغ وإخفاء الرسالة
+                            $("#add_product_form_element").show(); // إعادة إظهار الفورم داخل الحاوية المخفية
+                        }, 10000); // 10000 ميلي ثانية = 10 ثوانٍ
                     },
-                    error: function(xhr, status, error) {
-                        console.log("Error status:", status);
-                        console.log("Error:", error);
-                        console.log("Response:", xhr.responseText); // عرض الاستجابة كاملة من السيرفر
-                        $("#responseMessage").html("<p>Error adding product. Please try again.</p>").css("color", "red");
+                    error: function(xhr) {
+                        var errors = xhr.responseJSON.errors;
+                        var errorHtml = '<ul style="color:red; list-style-type: none; padding: 0;">';
+                        $.each(errors, function(key, value) {
+                            errorHtml += '<li>' + value[0] + '</li>';
+                        });
+                        errorHtml += '</ul>';
+                        $("#addResponseMessage").html(errorHtml).show();
                     }
                 });
-
             });
+
+            // إرسال فورم التعديل باستخدام AJAX
+           $("#Editproduct").submit(function(e) {
+    e.preventDefault(); // منع إعادة تحميل الصفحة
+
+    var formElement = $("#Editproduct")[0];
+    if (formElement && formElement.tagName === "FORM") {
+        // الحصول على البيانات من الفورم
+        var formData = new FormData($("#Editproduct")[0]); // استخدام المرجع الصحيح للنموذج
+
+        // التحقق من محتويات FormData
+        for (var pair of formData.entries()) {
+            console.log(pair[0]+ ': ' + pair[1]);  // عرض الحقول المرسلة
+        }
+
+        // التأكد من أن الحقل "name" ليس فارغًا
+        var name = $("#Edit_name").val();
+        if (!name) {
+            alert("Product name cannot be empty.");
+            return; // إيقاف الإرسال إذا كان الحقل فارغًا
+        }
+
+        // التأكد من أن productId تم تخزينه في متغير global
+        if (productId === null) {
+            console.error("Product ID is not set properly.");
+            $("#editResponseMessage").html("<p>Error: Product ID is missing.</p>").css("color", "red");
+            return;
+        }
+
+        // إنشاء الرابط باستخدام productId الذي تم تخزينه
+        var updateUrl = "{{ route('admin.products.update', ':id') }}";
+        updateUrl = updateUrl.replace(':id', productId); // استخدام الـ ID المخزن
+
+        console.log("Updated URL:", updateUrl); // تحقق من الـ URL المحدث
+
+        // إرسال البيانات باستخدام AJAX
+        $.ajax({
+            url: updateUrl, // استخدم الرابط المعدل
+            type: "POST", //  <-- التعديل هنا
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                console.log(response);
+
+                // 1. إخفاء نماذج البحث والتعديل لإفساح المجال للرسالة
+                $("#searchProductForm, #Editproduct").hide();
+
+                // 2. عرض رسالة النجاح مكان الفورم
+                $("#editResponseMessage")
+                    .html("<p style='color: green; text-align: center; font-size: 1.2em;'>Product updated successfully!</p>")
+                    .show();
+
+                // 3. بعد 10 ثوانٍ، إخفاء الحاوية بالكامل وإعادة تهيئتها للاستخدام التالي
+                setTimeout(function() {
+                    $("#EditproductForm").hide(); // إخفاء الحاوية بالكامل كما طلبت
+                    $("#Editproduct")[0].reset(); // إعادة تعيين حقول الفورم
+                    $("#searchProductForm")[0].reset(); // إعادة تعيين حقول البحث
+                    $("#editResponseMessage").empty().hide(); // إفراغ وإخفاء الرسالة
+                    $("#searchProductForm, #Editproduct").show(); // إعادة إظهار النماذج داخل الحاوية المخفية استعداداً للنقرة التالية
+                }, 10000); // 10000 ميلي ثانية = 10 ثوانٍ
+            },
+            error: function(xhr, status, error) {
+                console.log("Error status:", status);
+                console.log("Error:", error);
+                console.log("Response:", xhr.responseText); // عرض الاستجابة كاملة من السيرفر
+                $("#editResponseMessage").html("<p>Error updating product. Please try again.</p>").css("color", "red");
+            }
+        });
+    } else {
+        console.error("The element is not a valid form. Element details:", formElement);
+        $("#editResponseMessage").html("<p>Error: The form element is invalid.</p>").css("color", "red");
+    }
+});
+
+
+
+
+
         });
     </script>
 </body>
