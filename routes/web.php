@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Backend\Admin\CategoriesController;
 use App\Http\Controllers\Backend\Admin\ProductController;
+use App\Http\Controllers\ShoppingCartController;
 use App\Models\Category;
 use App\Models\Product;
 
@@ -29,19 +30,23 @@ Route::get('/', function () {
 })->name('landing');
 
 
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-    ->name('logout');
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
 Route::middleware('auth')->group(function () {
 
     // صفحة الداشبورد الرئيسية للمستخدم
-    Route::get('/shop/frontend/user', [UserDashboardController::class, 'index'])
-        ->middleware(['verified'])
+    Route::get('/shop/frontend/user', [UserDashboardController::class, 'index'])->middleware(['verified'])
         ->name('user.dashboard');
 
     // صفحة تعديل الحساب في المسار المطلوب
     Route::get('/shop/frontend/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/shop/frontend/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Route to get products by subcategory via AJAX
+
+    Route::get('/products/by-subcategory/{subcategory_id}', [ProductController::class, 'getProductsBySubcategory'])->name('products.by_subcategory');
+    Route::get('/cart/add', [ShoppingCartController::class, 'index'])->name('shop.backend.cart');
+    Route::post('/cart/add', [ShoppingCartController::class, 'addItem'])->name('cart.add');
 
 
 

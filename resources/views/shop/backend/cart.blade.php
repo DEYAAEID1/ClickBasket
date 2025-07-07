@@ -93,7 +93,7 @@
                 <div class="col-lg-8 mb-40">
                     <h1 class="heading-2 mb-10">Your Cart</h1>
                     <div class="d-flex justify-content-between">
-                        <h6 class="text-body">There are <span class="text-brand">3</span> products in your cart</h6>
+                        <h6 class="text-body">There are <span class="text-brand">{{ count($cartItems) }}</span> products in your cart</h6>
                         <h6 class="text-body"><a href="#" class="text-muted"><i class="fi-rs-trash mr-5"></i>Clear Cart</a></h6>
                     </div>
                 </div>
@@ -116,40 +116,43 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @foreach($cartItems as $item)
                                 <tr class="pt-30">
                                     <td class="custome-checkbox pl-30">
                                         <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox1" value="">
                                         <label class="form-check-label" for="exampleCheckbox1"></label>
                                     </td>
-                                    <td class="image product-thumbnail pt-40"><img src="assets/imgs/shop/product-1-1.jpg" alt="#"></td>
+                                    <td class="image product-thumbnail pt-40"><img src="{{ asset($item->product->image) }}" alt="{{ $item->product->name }}"></td>
                                     <td class="product-des product-name">
-                                        <h6 class="mb-5"><a class="product-name mb-10 text-heading" href="shop-product-right.html">Field Roast Chao Cheese Creamy Original</a></h6>
+                                        <h6 class="mb-5"><a class="product-name mb-10 text-heading" href="#">{{ $item->product->name }}</a></h6>
                                         <div class="product-rate-cover">
                                             <div class="product-rate d-inline-block">
                                                 <div class="product-rating" style="width:90%">
                                                 </div>
                                             </div>
-                                            <span class="font-small ml-5 text-muted"> (4.0)</span>
+                                            <span class="font-small ml-5 text-muted"></span>
                                         </div>
                                     </td>
                                     <td class="price" data-title="Price">
-                                        <h4 class="text-body">$2.51 </h4>
+                                        <h4 class="text-body">${{ $item->product->price }}</h4>
                                     </td>
                                     <td class="text-center detail-info" data-title="Stock">
                                         <div class="detail-extralink mr-15">
                                             <div class="detail-qty border radius">
                                                 <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
-                                                <input type="text" name="quantity" class="qty-val" value="1" min="1">
+                                                <input type="text" name="quantity" class="qty-val" value="{{ $item->quantity }}" min="1">
                                                 <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="price" data-title="Price">
-                                        <h4 class="text-brand">$2.51 </h4>
+                                        <h4 class="text-brand">${{ $item->product->price * $item->quantity }}</h4>
                                     </td>
                                     <td class="action text-center" data-title="Remove"><a href="#" class="text-body"><i class="fi-rs-trash"></i></a></td>
                                 </tr>
-                                <tr>
+                                @endforeach
+
+                                <!--<tr>
                                     <td class="custome-checkbox pl-30">
                                         <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox2" value="">
                                         <label class="form-check-label" for="exampleCheckbox2"></label>
@@ -182,7 +185,7 @@
                                     </td>
                                     <td class="action text-center" data-title="Remove"><a href="#" class="text-body"><i class="fi-rs-trash"></i></a></td>
                                 </tr>
-                                <tr>
+                                <tr>-->
                                     <td class="custome-checkbox pl-30">
                                         <input class="form-check-input" type="checkbox" name="checkbox" id="exampleCheckbox3" value="">
                                         <label class="form-check-label" for="exampleCheckbox3"></label>
@@ -312,23 +315,16 @@
         </div>
     </div>
     <!-- Vendor JS-->
-    <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
-    <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
-    <script src="assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
-    <script src="assets/js/vendor/bootstrap.bundle.min.js"></script>
+
     <script src="assets/js/plugins/slick.js"></script>
     <script src="assets/js/plugins/jquery.syotimer.min.js"></script>
     <script src="assets/js/plugins/wow.js"></script>
     <script src="assets/js/plugins/jquery-ui.js"></script>
     <script src="assets/js/plugins/perfect-scrollbar.js"></script>
     <script src="assets/js/plugins/magnific-popup.js"></script>
-    <script src="assets/js/plugins/select2.min.js"></script>
     <script src="assets/js/plugins/waypoints.js"></script>
     <script src="assets/js/plugins/counterup.js"></script>
     <script src="assets/js/plugins/jquery.countdown.min.js"></script>
-    <script src="assets/js/plugins/images-loaded.js"></script>
-    <script src="assets/js/plugins/isotope.js"></script>
-    <script src="assets/js/plugins/scrollup.js"></script>
     <script src="assets/js/plugins/jquery.vticker-min.js"></script>
     <script src="assets/js/plugins/jquery.theia.sticky.js"></script>
     <script src="assets/js/plugins/jquery.elevatezoom.js"></script>

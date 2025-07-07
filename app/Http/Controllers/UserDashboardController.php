@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class UserDashboardController extends Controller
@@ -11,6 +12,9 @@ class UserDashboardController extends Controller
      */
     public function index()
     {
-        return view('shop.frontend.user');
+       $categories = Category::with('subcategories')->whereHas('subcategories')->get();
+        return view('shop.frontend.user', compact('categories'));
+
+        
     }
 }

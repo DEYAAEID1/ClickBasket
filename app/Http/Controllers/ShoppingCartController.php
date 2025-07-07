@@ -2,64 +2,76 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ShoppingCart;
+use App\Models\Product; // Assuming you have a Product model
+use App\Models\ShoppingCart; // Your ShoppingCart model
 use Illuminate\Http\Request;
 
 class ShoppingCartController extends Controller
 {
+    // ... other methods like index(), show(), etc.
+
     /**
-     * Display a listing of the resource.
+     * Add a product to the shopping cart.
      */
+    public function addItem(Request $request)
+    {
+        // Validate the request data
+        $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        // Get the product
+        $product = Product::findOrFail($request->product_id);
+
+        // Get the user's cart (you might need to adjust this based on how you store the cart)
+        $cart = $this->getOrCreateCart();
+
+        // Add the item to the cart
+        $cart->addItem($product, $request->quantity);  // Assumes you have an addItem method in your ShoppingCart model
+
+        // Return a response (e.g., redirect back with a success message)
+        return redirect()->back()->with('success', 'Product added to cart!');
+    }
+
     public function index()
     {
-        //
+
+        // استرجاع السلة من الـ session أو قاعدة البيانات
+        $cartItems = session()->get('cart.items', []); // مثال: استرجاع من session
+
+        // تمرير البيانات إلى صفحة السلة
+        return view('shop.backend.cart', compact('cartItems'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
-     * Store a newly created resource in storage.
+     * Get the user's cart or create a new one if it doesn't exist.
+     * 
+     *  This is a helper method, adjust it based on your cart storage mechanism (session, DB, etc).
      */
-    public function store(Request $request)
+    private function getOrCreateCart()
     {
-        //
-    }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(ShoppingCart $shoppingCart)
-    {
-        //
-    }
+        $cart = session()->get('cart');
+        $cartId = session()->get('cart_id');
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(ShoppingCart $shoppingCart)
-    {
-        //
-    }
+        if (!$cart) {
+            if ($cartId) {
+                $cart = ShoppingCart::find($cartId);
+            }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, ShoppingCart $shoppingCart)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(ShoppingCart $shoppingCart)
-    {
-        //
+            if (!$cartId || !$cart) {
+                $cart = new ShoppingCart();
+                session()->put('cart', $cart);
+                $cart->save(); // Save the cart to the database to get an ID
+
+
+
+
+            }
+        }
+        return $cart;
     }
 }

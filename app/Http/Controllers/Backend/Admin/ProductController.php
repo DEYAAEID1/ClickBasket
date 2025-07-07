@@ -12,6 +12,34 @@ class ProductController extends Controller
 {
 
 
+    public function getProductsBySubcategory($subcategory_id)
+    {
+        try {
+            // Validate that the subcategory_id is a number
+            if (!is_numeric($subcategory_id)) {
+                return response()->json(['message' => 'Invalid subcategory ID.'], 400);
+            }
+
+            // Fetch active products belonging to the selected subcategory
+            // Eager load the category to avoid N+1 issues in the view
+            $products = Product::with('category')
+                               ->where('subcategory_id', $subcategory_id)
+                               ->where('is_active', 1) // Good practice to only show active products
+                               ->get();
+
+            return response()->json(['products' => $products]);
+
+        } catch (\Exception $e) {
+            // Log the error for debugging purposes
+            \Log::error('Error fetching products by subcategory: ' . $e->getMessage());
+
+            // Return a generic but informative error response
+            return response()->json(['message' => 'A server error occurred while fetching products.'], 500);
+        }
+    }
+
+
+
 public function searchProduct(Request $request)
 {
     $product_id = $request->input('product_id');
