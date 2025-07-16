@@ -100,11 +100,12 @@ Route::middleware('auth')->group(function () {
 
 
 Route::get('/test', function () {
-    $categories = Category::all();
-    return view('test', compact('categories'));
+   
+    return view('test');
 })->name('test');
 Route::get('/test2', function () {
-    return view('shop.frontend.user');
+  
+    return view('test2');
 })->name('test2');
 
 
