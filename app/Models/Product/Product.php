@@ -4,13 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ProductImage;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
-    use HasFactory;
- protected $primaryKey = 'id'; 
+    use HasFactory; 
+
+    protected $table = 'products'; 
+   
+    protected $primaryKey = 'id'; 
     protected $fillable = [
-        
         'category_id',
         'subcategory_id',
         'name',
@@ -33,15 +37,18 @@ class Product extends Model
         'rating_average' => 'float',
     ];
 
-    // علاقة مع الفئة الرئيسية
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
 
-    // علاقة مع الفئة الفرعية
     public function subcategory()
     {
         return $this->belongsTo(Subcategory::class);
+    }
+
+    public function images(): HasMany // تغيير اسم العلاقة إلى الجمع
+    {
+        return $this->hasMany(ProductImage::class);
     }
 }

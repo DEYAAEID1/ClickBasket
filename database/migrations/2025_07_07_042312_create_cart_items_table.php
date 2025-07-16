@@ -19,8 +19,9 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');           
             $table->integer('quantity')->default(1);
             $table->decimal('price', 8, 2);
+        
             $table->timestamps();
-            
+
             $table->foreign('shopping_cart_id')->references('id')->on('shopping_carts')->onDelete('cascade');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
         });
