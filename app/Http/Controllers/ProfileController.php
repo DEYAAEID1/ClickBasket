@@ -68,8 +68,8 @@ return redirect()->route('user.dashboard')->with('success', 'Profile updated suc
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validateWithBag('userDeletion', [إ
-            'password' => ['required', 'current_password'],
+        $request->validateWithBag('userDeletion', [
+            'password' => ['required', 'current_password']
         ]);
 
         $user = $request->user();

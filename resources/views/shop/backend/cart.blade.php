@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Nest - Multipurpose eCommerce HTML Template</title>
+    <title>ClickBasket</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,7 +23,7 @@
             <div class="container">
                 <div class="header-wrap">
                     <div class="logo logo-width-1">
-                        <a href="{{ route('landing') }}"><img src="{{ asset('assets/imgs/logow.png') }}" alt="logo" /></a>
+                        <a href="{{ route('landing') }}"><img src="{{ asset('public\assets\imgs\login.png') }}" alt="logo" /></a>
                     </div>
                     <div class="header-right">
                     <div id="User_Name" class="text-center">

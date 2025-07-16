@@ -18,6 +18,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/plugins/animate.min.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/css/landmain.css?v=5.3') }}" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" />
+    <link src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" />
 </head>
 
 <body>
@@ -92,7 +94,35 @@
                             <div class="col-md-3">
 
                             </div>
-
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">First</th>
+                                        <th scope="col">Last</th>
+                                        <th scope="col">Handle</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>إ
+                                        <th scope="row">1</th>
+                                        <td>Mark</td>
+                                        <td>Otto</td>
+                                        <td>@mdo</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">2</th>
+                                        <td>Jacob</td>
+                                        <td>Thornton</td>
+                                        <td>@fat</td>
+                                    </tr>
+                                    <tr>
+                                        <th scope="row">3</th>
+                                        <td colspan="2">Larry the Bird</td>
+                                        <td>@twitter</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                             <!-- الجزء الخاص باضافة منتج -->
                             <div id="addProductForm" style="display: none;">
                                 <h3 class="mb-0">Add Product</h3>
@@ -112,7 +142,7 @@
                                         <select name="category_id" id="add_category_id" class="form-control" required>
                                             <option value="">-- Select Category --</option>
                                             @foreach($categories as $category)
-                                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -197,7 +227,7 @@
                                         <select name="category_id" id="Edit_category_id" class="form-control" required>
                                             <option value="">-- Select Category --</option>
                                             @foreach($categories as $category)
-                                                <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                            <option value="{{ $category->id }}">{{ $category->name }}</option>
                                             @endforeach
                                         </select>
                                     </div>
@@ -281,10 +311,11 @@
                 }
             });
         });
-        
+
         $(document).ready(function() {
             $.ajaxSetup({
                 headers: {
+                    // لتوصيل ال req من ال back  مع تشفير للبيانات 
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
@@ -475,78 +506,78 @@
             });
 
             // إرسال فورم التعديل باستخدام AJAX
-           $("#Editproduct").submit(function(e) {
-    e.preventDefault(); // منع إعادة تحميل الصفحة
+            $("#Editproduct").submit(function(e) {
+                e.preventDefault(); // منع إعادة تحميل الصفحة
 
-    var formElement = $("#Editproduct")[0];
-    if (formElement && formElement.tagName === "FORM") {
-        // الحصول على البيانات من الفورم
-        var formData = new FormData($("#Editproduct")[0]); // استخدام المرجع الصحيح للنموذج
+                var formElement = $("#Editproduct")[0];
+                if (formElement && formElement.tagName === "FORM") {
+                    // الحصول على البيانات من الفورم
+                    var formData = new FormData($("#Editproduct")[0]); // استخدام المرجع الصحيح للنموذج
 
-        // التحقق من محتويات FormData
-        for (var pair of formData.entries()) {
-            console.log(pair[0]+ ': ' + pair[1]);  // عرض الحقول المرسلة
-        }
+                    // التحقق من محتويات FormData
+                    for (var pair of formData.entries()) {
+                        console.log(pair[0] + ': ' + pair[1]); // عرض الحقول المرسلة
+                    }
 
-        // التأكد من أن الحقل "name" ليس فارغًا
-        var name = $("#Edit_name").val();
-        if (!name) {
-            alert("Product name cannot be empty.");
-            return; // إيقاف الإرسال إذا كان الحقل فارغًا
-        }
+                    // التأكد من أن الحقل "name" ليس فارغًا
+                    var name = $("#Edit_name").val();
+                    if (!name) {
+                        alert("Product name cannot be empty.");
+                        return; // إيقاف الإرسال إذا كان الحقل فارغًا
+                    }
 
-        // التأكد من أن productId تم تخزينه في متغير global
-        if (productId === null) {
-            console.error("Product ID is not set properly.");
-            $("#editResponseMessage").html("<p>Error: Product ID is missing.</p>").css("color", "red");
-            return;
-        }
+                    // التأكد من أن productId تم تخزينه في متغير global
+                    if (productId === null) {
+                        console.error("Product ID is not set properly.");
+                        $("#editResponseMessage").html("<p>Error: Product ID is missing.</p>").css("color", "red");
+                        return;
+                    }
 
-        // إنشاء الرابط باستخدام productId الذي تم تخزينه
-        var updateUrl = "{{ route('admin.products.update', ':id') }}";
-        updateUrl = updateUrl.replace(':id', productId); // استخدام الـ ID المخزن
+                    // إنشاء الرابط باستخدام productId الذي تم تخزينه
+                    var updateUrl = "{{ route('admin.products.update', ':id') }}";
+                    updateUrl = updateUrl.replace(':id', productId); // استخدام الـ ID المخزن
 
-        console.log("Updated URL:", updateUrl); // تحقق من الـ URL المحدث
+                    console.log("Updated URL:", updateUrl); // تحقق من الـ URL المحدث
 
-        // إرسال البيانات باستخدام AJAX
-        $.ajax({
-            url: updateUrl, // استخدم الرابط المعدل
-            type: "POST", //  <-- التعديل هنا
-            data: formData,
-            processData: false,
-            contentType: false,
-            success: function(response) {
-                console.log(response);
+                    // إرسال البيانات باستخدام AJAX
+                    $.ajax({
+                        url: updateUrl, // استخدم الرابط المعدل
+                        type: "POST", //  <-- التعديل هنا
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            console.log(response);
 
-                // 1. إخفاء نماذج البحث والتعديل لإفساح المجال للرسالة
-                $("#searchProductForm, #Editproduct").hide();
+                            // 1. إخفاء نماذج البحث والتعديل لإفساح المجال للرسالة
+                            $("#searchProductForm, #Editproduct").hide();
 
-                // 2. عرض رسالة النجاح مكان الفورم
-                $("#editResponseMessage")
-                    .html("<p style='color: green; text-align: center; font-size: 1.2em;'>Product updated successfully!</p>")
-                    .show();
+                            // 2. عرض رسالة النجاح مكان الفورم
+                            $("#editResponseMessage")
+                                .html("<p style='color: green; text-align: center; font-size: 1.2em;'>Product updated successfully!</p>")
+                                .show();
 
-                // 3. بعد 10 ثوانٍ، إخفاء الحاوية بالكامل وإعادة تهيئتها للاستخدام التالي
-                setTimeout(function() {
-                    $("#EditproductForm").hide(); // إخفاء الحاوية بالكامل كما طلبت
-                    $("#Editproduct")[0].reset(); // إعادة تعيين حقول الفورم
-                    $("#searchProductForm")[0].reset(); // إعادة تعيين حقول البحث
-                    $("#editResponseMessage").empty().hide(); // إفراغ وإخفاء الرسالة
-                    $("#searchProductForm, #Editproduct").show(); // إعادة إظهار النماذج داخل الحاوية المخفية استعداداً للنقرة التالية
-                }, 10000); // 10000 ميلي ثانية = 10 ثوانٍ
-            },
-            error: function(xhr, status, error) {
-                console.log("Error status:", status);
-                console.log("Error:", error);
-                console.log("Response:", xhr.responseText); // عرض الاستجابة كاملة من السيرفر
-                $("#editResponseMessage").html("<p>Error updating product. Please try again.</p>").css("color", "red");
-            }
-        });
-    } else {
-        console.error("The element is not a valid form. Element details:", formElement);
-        $("#editResponseMessage").html("<p>Error: The form element is invalid.</p>").css("color", "red");
-    }
-});
+                            // 3. بعد 10 ثوانٍ، إخفاء الحاوية بالكامل وإعادة تهيئتها للاستخدام التالي
+                            setTimeout(function() {
+                                $("#EditproductForm").hide(); // إخفاء الحاوية بالكامل كما طلبت
+                                $("#Editproduct")[0].reset(); // إعادة تعيين حقول الفورم
+                                $("#searchProductForm")[0].reset(); // إعادة تعيين حقول البحث
+                                $("#editResponseMessage").empty().hide(); // إفراغ وإخفاء الرسالة
+                                $("#searchProductForm, #Editproduct").show(); // إعادة إظهار النماذج داخل الحاوية المخفية استعداداً للنقرة التالية
+                            }, 10000); // 10000 ميلي ثانية = 10 ثوانٍ
+                        },
+                        error: function(xhr, status, error) {
+                            console.log("Error status:", status);
+                            console.log("Error:", error);
+                            console.log("Response:", xhr.responseText); // عرض الاستجابة كاملة من السيرفر
+                            $("#editResponseMessage").html("<p>Error updating product. Please try again.</p>").css("color", "red");
+                        }
+                    });
+                } else {
+                    console.error("The element is not a valid form. Element details:", formElement);
+                    $("#editResponseMessage").html("<p>Error: The form element is invalid.</p>").css("color", "red");
+                }
+            });
 
 
 

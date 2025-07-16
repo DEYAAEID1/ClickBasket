@@ -58,10 +58,11 @@
                     <nav>
                         <ul>
                             <li>
-                                <a class="active" href="user.dashboard">Shop </a>
+                                <a class="active" href="user">Shop </a>
+                                @csrf
                             </li>
                             <li>
-                                <a class="active" href="shop.backend.cart">Cart </a>
+                                <a class="active" href="backend.cart">Cart </a>
                             </li>
                             <li>
                                 <a href="#">Account <i class="fi-rs-angle-down"></i></a>

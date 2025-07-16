@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
         addSubcategoryBtn.addEventListener('click', function () {
             const categoryId = subcategoryColumn.dataset.categoryId;
             if (categoryId) {
-                window.location.href = `/admin/categories/${categoryId}/subcategories/create`;
+                window.location.href = `/sub/update/{id}`;
             }
         });
     }
