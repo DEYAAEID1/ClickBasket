@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
-    
-
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Laratrust\Traits\HasRolesAndPermissions; 
+use Laratrust\Traits\HasRolesAndPermissions;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRolesAndPermissions;
+    use HasApiTokens;
+    use HasFactory;
+    use Notifiable;
+    use HasRolesAndPermissions;
     protected $fillable = [
     'name',
     'email',
@@ -22,10 +23,10 @@ class User extends Authenticatable
     'city',
     'postal_code',
     'country',
-    'avatar', 
+    'avatar',
 ];
 
-    // استخدام casts 
+    // استخدام casts
     /*لما يكون عندك عمود تاريخ (timestamp/datetime) أو Boolean أو JSON
      وتريد تتعامل معه في Laravel
       ككائن أو قيمة منطقية (true/false)
@@ -35,5 +36,5 @@ class User extends Authenticatable
         'is_active' => 'boolean',
     ];
 
-    
+
 }

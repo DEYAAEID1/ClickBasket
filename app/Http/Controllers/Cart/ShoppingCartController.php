@@ -47,7 +47,7 @@ class ShoppingCartController extends Controller
 
     /**
      * Get the user's cart or create a new one if it doesn't exist.
-     * 
+     *
      *  This is a helper method, adjust it based on your cart storage mechanism (session, DB, etc).
      */
     private function getOrCreateCart()

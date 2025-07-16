@@ -12,8 +12,6 @@ use App\Services\ProductService;
 
 class ProductController extends Controller
 {
-
-
     public function getProductsBySubcategory($subcategory_id)
     {
         // Create an instance of the ProductService
@@ -24,7 +22,7 @@ class ProductController extends Controller
             // Return the fetched products as a JSON response
             return response()->json(['products' => $products]);
         }
-        // when use "\Exception" with "\" Handle any exceptions that may occur during the fetching process 
+        // when use "\Exception" with "\" Handle any exceptions that may occur during the fetching process
         catch (\Exception $e) {
             // Log any exceptions that occur during the fetching process
             Log::error('Error fetching products by subcategory: ' . $e->getMessage());
@@ -92,18 +90,19 @@ class ProductController extends Controller
 
         ];
 
-       
-    $product = $productService->updateProduct($id, $validated, $files);
-return response()->json(['message' => 'Product updated successfully!', 'product' => $product]);
+
+        $product = $productService->updateProduct($id, $validated, $files);
+        return response()->json(['message' => 'Product updated successfully!', 'product' => $product]);
     }
 
 
 
 
-   public function deleteProduct($id, ProductService $productService) {
-    $product = $productService->deleteProductById($id);
-    return response()->json(['message' => 'Product deleted successfully', 'product' => $product]);
-}
+    public function deleteProduct($id, ProductService $productService)
+    {
+        $product = $productService->deleteProductById($id);
+        return response()->json(['message' => 'Product deleted successfully', 'product' => $product]);
+    }
 
     public function create()
     {
@@ -112,17 +111,18 @@ return response()->json(['message' => 'Product updated successfully!', 'product'
         return view('admin.products.create', compact('subcategories'));
     }
 
-    public function store(Request $request, ProductService $productService) {
-    $validated = $request->validate([
-        // القواعد الخاصة بالتحقق من صحة البيانات
-    ]);
+    public function store(Request $request, ProductService $productService)
+    {
+        $validated = $request->validate([
+            // القواعد الخاصة بالتحقق من صحة البيانات
+        ]);
 
-    $files = [
-        'image' => $request->file('image'),
-        'gallery' => $request->file('gallery'),
-    ];
+        $files = [
+            'image' => $request->file('image'),
+            'gallery' => $request->file('gallery'),
+        ];
 
-    $product = $productService->storeProduct($validated, $files);
-    return response()->json(['success' => 'Product added successfully!', 'product' => $product]);
-}
+        $product = $productService->storeProduct($validated, $files);
+        return response()->json(['success' => 'Product added successfully!', 'product' => $product]);
+    }
 }

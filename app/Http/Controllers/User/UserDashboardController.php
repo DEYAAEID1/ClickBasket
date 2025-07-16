@@ -12,9 +12,9 @@ class UserDashboardController extends Controller
      */
     public function index()
     {
-       $categories = Category::with('subcategories')->whereHas('subcategories')->get();
+        $categories = Category::with('subcategories')->whereHas('subcategories')->get();
         return view('shop.frontend.user', compact('categories'));
 
-        
+
     }
 }

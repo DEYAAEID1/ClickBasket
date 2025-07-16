@@ -19,7 +19,7 @@ class ProductService
         if (!is_numeric($subcategory_id)) {
             return response()->json(['message' => 'Invalid subcategory ID.'], 400);
         }
-        // Return all products for the specified subcategory, ensuring they are active, 
+        // Return all products for the specified subcategory, ensuring they are active,
         // and include the related category information using eager loading.
         return Product::with('category')
             ->where('subcategory_id', $subcategory_id)
@@ -29,7 +29,7 @@ class ProductService
     // receve a $product_id from searchProduct function in product controller
     public function searchProductById($product_id)
     {
-        // find a product by id to send it to the frontend by  searchProduct function in product controller 
+        // find a product by id to send it to the frontend by  searchProduct function in product controller
 
         return Product::find($product_id);
     }
@@ -61,7 +61,7 @@ class ProductService
         }
 
         if (isset($files['gallery'])) {
-            // use foreach to handle many image 
+            // use foreach to handle many image
 
             foreach ($files['gallery'] as $file) {
                 if ($file->isValid()) {

@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Product extends Model
 {
-    use HasFactory; 
+    use HasFactory;
 
-    protected $table = 'products'; 
-   
-    protected $primaryKey = 'id'; 
+    protected $table = 'products';
+
+    protected $primaryKey = 'id';
     protected $fillable = [
         'category_id',
         'subcategory_id',

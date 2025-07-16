@@ -27,7 +27,7 @@ class ShoppingCart extends Model
     public function addItem(Product $product, int $quantity)
     {
         if (!$this->exists) {
-            $this->save(); // to give the cart an id if it doesn't exist 
+            $this->save(); // to give the cart an id if it doesn't exist
         }
 
         // chik if the product is already in the cart
@@ -41,7 +41,7 @@ class ShoppingCart extends Model
                 'shopping_cart_id' => $this->id,
                 'product_id' => $product->id,
                 'quantity' => $quantity,
-                'price' => $product->price, // update the price if its have a copone 
+                'price' => $product->price, // update the price if its have a copone
             ]);
         }
 

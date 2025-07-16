@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 
 class CategoriesController extends Controller
 {
-
     public function getSubcategories($categoryid)
     {
 
@@ -42,7 +41,7 @@ class CategoriesController extends Controller
     // إضافة تصنيف رئيسي جديد
     public function storeCategory(Request $request)
     {
-         // التحقق من الحقول المدخلة
+        // التحقق من الحقول المدخلة
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
             'description' => 'nullable|string',

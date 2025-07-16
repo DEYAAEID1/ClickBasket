@@ -14,11 +14,11 @@ class Subcategory extends Model
     {
         return $this->belongsTo(Category::class);
     }
-     protected $fillable = [
-        'category_id',
-        'name',
-        'description',
-        'image', // تأكد من إضافة حقل الصورة
-        'slug',
+    protected $fillable = [
+       'category_id',
+       'name',
+       'description',
+       'image', // تأكد من إضافة حقل الصورة
+       'slug',
     ];
 }
