@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Requests\CategoryRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Subcategory;
 use Illuminate\Http\Request;
+use App\Http\Requests\SubcategoryRequest;
 
 class CategoriesController extends Controller
 {
@@ -39,14 +41,11 @@ class CategoriesController extends Controller
 
 
     // إضافة تصنيف رئيسي جديد
-    public function storeCategory(Request $request)
+
+    public function storeCategory(CategoryRequest $request)
     {
-        // التحقق من الحقول المدخلة
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name',
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        // التحقق من المدخلات باستخدام FormRequest
+        $validated = $request->validated();
 
         // إنشاء الفئة الجديدة
         $category = new Category();
@@ -66,16 +65,14 @@ class CategoriesController extends Controller
     }
 
     // تعديل تصنيف رئيسي
-    public function updateCategory(Request $request, $id)
-    {
-        // التحقق من الحقول المدخلة
-        $request->validate([
-            'name' => 'required|string|max:255|unique:categories,name,' . $id,
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
 
-        $category = Category::findOrFail($id); // جلب الفئة حسب ID
+    public function updateCategory(CategoryRequest $request, $id)
+    {
+        // التحقق من المدخلات باستخدام FormRequest
+        $validated = $request->validated();
+
+        // جلب الفئة حسب ID
+        $category = Category::findOrFail($id);
         $category->name = $request->name;
         $category->description = $request->description;
 
@@ -85,7 +82,7 @@ class CategoriesController extends Controller
             $category->image = $imagePath;
         }
 
-        // حفظ التعديلات
+        // حفظ الفئة المعدلة
         $category->save();
 
         return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
@@ -105,63 +102,56 @@ class CategoriesController extends Controller
         return view('shop.backend.subcategories_create', compact('categories'));
     }
     // إضافة تصنيف فرعي جديد
-    public function storeSubcategory(Request $request)
-    {
-        $request->validate([
-            'category_id' => 'required|exists:categories,id', // التحقق من الفئة الرئيسية
-            'name' => 'required|string|max:255|unique:subcategories,name', // التحقق من اسم الفئة الفرعية
-            'description' => 'nullable|string', // الوصف اختياري
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // التحقق من صورة الفئة الفرعية
-        ]);
 
-        // إنشاء الكائن الجديد للفئة الفرعية
+    public function storeSubcategory(SubcategoryRequest $request)
+    {
+        // التحقق من المدخلات باستخدام FormRequest
+        $validated = $request->validated();
+
+        // إنشاء الفئة الفرعية الجديدة
         $subcategory = new Subcategory([
             'category_id' => $request->category_id,
             'name' => $request->name,
             'description' => $request->description,
         ]);
 
-        // إضافة الصورة إذا كانت موجودة
+        // التحقق إذا كانت الصورة موجودة وتحميلها
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('subcategories', 'public');
             $subcategory->image = $imagePath;
         }
 
-        // إنشاء الكائن وتخزينه في قاعدة البيانات
+        // حفظ الفئة الفرعية
         $subcategory->save();
 
-        // إعادة التوجيه إلى صفحة الفئات الرئيسية مع رسالة النجاح
-        return redirect()->route('admin.categories.index')->with('success', 'Subcategory added successfully.');
+        return redirect()->route('admin.subcategories.index')->with('success', 'Subcategory added successfully.');
     }
 
 
 
     // تعديل تصنيف فرعي
-    public function updateSubcategory(Request $request, $id)
+
+    public function updateSubcategory(SubcategoryRequest $request, $id)
     {
+        // التحقق من المدخلات باستخدام FormRequest
+        $validated = $request->validated();
+
+        // جلب الفئة الفرعية حسب ID
         $subcategory = Subcategory::findOrFail($id);
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|max:255|unique:subcategories,name,' . $subcategory->id,
-            'description' => 'nullable|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
+        $subcategory->category_id = $request->category_id;
+        $subcategory->name = $request->name;
+        $subcategory->description = $request->description;
 
-
-        $subcategory->update([
-            'category_id' => $request->category_id,
-            'name' => $request->name,
-            'description' => $request->description,
-        ]);
-
-        // إذا كان هناك صورة
+        // التحقق إذا كانت الصورة موجودة وتحميلها
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('subcategories', 'public');
             $subcategory->image = $imagePath;
         }
 
+        // حفظ الفئة الفرعية المعدلة
         $subcategory->save();
-        return redirect()->route('admin.categories.index')->with('success', 'Subcategory updated successfully.');
+
+        return redirect()->route('admin.subcategories.index')->with('success', 'Subcategory updated successfully.');
     }
 
     public function editSubcategory($id)

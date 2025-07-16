@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product; // Assuming you have a Product model
 use App\Models\ShoppingCart; // Your ShoppingCart model
-use Illuminate\Http\Request;
+use App\Http\Requests\AddToCartRequest;
 
 class ShoppingCartController extends Controller
 {
@@ -13,22 +13,20 @@ class ShoppingCartController extends Controller
     /**
      * Add a product to the shopping cart.
      */
-    public function addItem(Request $request)
+    public function addItem(AddToCartRequest $request)
     {
         // Validate the request data
-        $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
-        ]);
+        $validated = $request->validated();
+
 
         // Get the product
-        $product = Product::findOrFail($request->product_id);
+        $product = Product::findOrFail($validated['product_id']);
 
-        // Get the user's cart (you might need to adjust this based on how you store the cart)
+        // Get the user's cart or create a new one
         $cart = $this->getOrCreateCart();
 
         // Add the item to the cart
-        $cart->addItem($product, $request->quantity);  // Assumes you have an addItem method in your ShoppingCart model
+        $cart->addItem($product, $request->quantity);
 
         // Return a response (e.g., redirect back with a success message)
         return redirect()->back()->with('success', 'Product added to cart!');

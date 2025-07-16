@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Backend\Admin;
 
+use App\Http\Requests\ProductRequest;
 use App\Http\Controllers\Controller;
-use App\Models\Product;
 use App\Models\Subcategory;
 use App\Models\Category;
 use Illuminate\Http\Request;
@@ -66,32 +66,20 @@ class ProductController extends Controller
             return back()->with('error', 'Product not found!');
         }
     }
-    public function updateProduct(Request $request, $id, ProductService $productService)
+
+    public function updateProduct(ProductRequest $request, $id, ProductService $productService)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:50',
-            'description' => 'required|string|max:255',
-            'price' => 'required|numeric',
-            'cost_price' => 'nullable|numeric',
-            'stock_quantity' => 'required|integer',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'gallery' => 'nullable|array',
-            'gallery.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'category_id' => 'required|exists:categories,id',
-            'subcategory_id' => 'required|exists:subcategories,id',
-            'is_active' => 'required|boolean',
+        $validated = $request->validated();  // التحقق من المدخلات
 
-
-        ]);
+        // التعامل مع الملفات بعد التحقق
         $files = [
-
             'image' => $request->file('image'),
             'gallery' => $request->file('gallery'),
-
         ];
 
-
+        // تحديث المنتج باستخدام الخدمة
         $product = $productService->updateProduct($id, $validated, $files);
+
         return response()->json(['message' => 'Product updated successfully!', 'product' => $product]);
     }
 
@@ -111,18 +99,20 @@ class ProductController extends Controller
         return view('admin.products.create', compact('subcategories'));
     }
 
-    public function store(Request $request, ProductService $productService)
-    {
-        $validated = $request->validate([
-            // القواعد الخاصة بالتحقق من صحة البيانات
-        ]);
 
+    public function store(ProductRequest $request, ProductService $productService)
+    {
+        $validated = $request->validated();  // التحقق من المدخلات
+
+        // التعامل مع الملفات بعد التحقق
         $files = [
             'image' => $request->file('image'),
             'gallery' => $request->file('gallery'),
         ];
 
+        // إضافة المنتج باستخدام الخدمة
         $product = $productService->storeProduct($validated, $files);
+
         return response()->json(['success' => 'Product added successfully!', 'product' => $product]);
     }
 }

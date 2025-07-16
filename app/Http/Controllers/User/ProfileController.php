@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\UpdateProfileRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
-use App\Models\User;
+use App\Http\Requests\DeleteUserRequest;
 
 class ProfileController extends Controller
 {
@@ -26,61 +25,35 @@ class ProfileController extends Controller
     /**
  * Update the user's profile information.
  */
-    public function update(Request $request)
+
+    public function update(UpdateProfileRequest $request)
     {
-        /** @var User $user */
-        $user = auth()->user();
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,'.$user->id,
-            'phone' => 'nullable|string|max:20',
-            'address' => 'nullable|string',
-            'city' => 'nullable|string|max:100',
-            'postal_code' => 'nullable|string|max:20',
-            'country' => 'nullable|string|max:100',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+        $user = auth()->user();  // Get the currently logged-in user
+        $validated = $request->validated();  // recall the valedated data from the request
 
-        if ($request->hasFile('avatar')) {
-            $avatarPath = $request->file('avatar')->store('avatars', 'public');
-            $data['avatar'] = $avatarPath;
+
+        if ($user instanceof \App\Models\User) { // chik if the object is a user instance
+            $user->update($validated);  // update user data
+        } else {
+            return back()->withErrors(['user' => 'User not found']);
         }
-
-        // حل بديل في حال update لا تعمل
-        foreach ($data as $key => $value) {
-            $user->$key = $value;
-        }
-
-        // تحديث email_verified_at إذا تم تغيير الإيميل
-        if ($data['email'] !== $user->email) {
-            $user->email_verified_at = null;
-        }
-
-        $user->save();
 
         return redirect()->route('user.dashboard')->with('success', 'Profile updated successfully.');
-
     }
 
 
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(DeleteUserRequest $request): RedirectResponse
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password']
-        ]);
+        $validated = $request->validated();
 
         $user = $request->user();
-
         Auth::logout();
 
-        $user->delete();
+        $user->delete(); // This line is correct, the 'update' method error was in the update function.
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        return redirect()->route('home')->with('status', 'Account deleted successfully.');
     }
 }
