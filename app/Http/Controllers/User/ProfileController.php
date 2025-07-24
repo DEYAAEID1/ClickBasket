@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Http\Requests\DeleteUserRequest;
-
+use App\Models\User\User;
 class ProfileController extends Controller
 {
     /**
@@ -32,7 +32,7 @@ class ProfileController extends Controller
         $validated = $request->validated();  // recall the valedated data from the request
 
 
-        if ($user instanceof \App\Models\User) { // chik if the object is a user instance
+        if ($user instanceof User) { // chik if the object is a user instance
             $user->update($validated);  // update user data
         } else {
             return back()->withErrors(['user' => 'User not found']);

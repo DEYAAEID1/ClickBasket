@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laratrust\Contracts\LaratrustUser;
+use Laratrust\Traits\HasRolesAndPermissions;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Laratrust\Traits\HasRolesAndPermissions;
-
-class User extends Authenticatable
+class User extends Authenticatable implements LaratrustUser
 {
+     use HasRolesAndPermissions; 
     use HasApiTokens;
     use HasFactory;
     use Notifiable;
-    use HasRolesAndPermissions;
     protected $fillable = [
     'name',
     'email',
@@ -36,5 +36,9 @@ class User extends Authenticatable
         'is_active' => 'boolean',
     ];
 
+public function getRoleAttribute()
+{
+     return $this->roles->first()->name ?? null; 
 
+}
 }

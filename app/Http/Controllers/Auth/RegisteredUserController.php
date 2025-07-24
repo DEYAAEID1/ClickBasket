@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 use App\Http\Requests\RegisterUserRequest;
+use App\Models\User\User as UserUser;
 
 class RegisteredUserController extends Controller
 {

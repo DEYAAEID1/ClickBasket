@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Product;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ProductImage;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Category\Category;
 
 class Product extends Model
 {

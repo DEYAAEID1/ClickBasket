@@ -1,16 +1,39 @@
 <?php
 
-namespace App\Http\Controllers\Backend\Admin;
+namespace App\Http\Controllers\Categories;
 
-use App\Http\Requests\CategoryRequest;
+use App\DataTables\CategoryDataTable;
+use App\Http\Requests\Frontend\CategoryRequest;
 use App\Http\Controllers\Controller;
-use App\Models\Category;
-use App\Models\Subcategory;
-use Illuminate\Http\Request;
+
+use App\Models\Category\Category;
+use App\Models\Category\Subcategory;
 use App\Http\Requests\SubcategoryRequest;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
+
+
+
+
+
+
 
 class CategoriesController extends Controller
 {
+    public function index(CategoryDataTable $dataTable)
+    {
+        $categories = Category::latest()->get();
+       
+        
+                return $dataTable->render('backend.pages.category.category');
+
+       
+    }
+
+
+
+
     public function getSubcategories($categoryid)
     {
 
@@ -27,11 +50,7 @@ class CategoriesController extends Controller
 
 
     // عرض جميع التصنيفات الرئيسية والفرعية
-    public function index()
-    {
-        $categories = Category::with('subcategories')->get();
-        return view('shop.backend.CRAD_category', compact('categories'));
-    }
+
 
     public function editcategory($id)
     {
@@ -87,6 +106,11 @@ class CategoriesController extends Controller
 
         return redirect()->route('admin.categories.index')->with('success', 'Category updated successfully.');
     }
+public function destroy(Category $category)
+{
+    $category->delete();
+    return response()->json(['message' => 'Category deleted successfully']);
+}
 
     // حذف تصنيف رئيسي
     public function destroyCategory($id)

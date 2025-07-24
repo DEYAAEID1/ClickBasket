@@ -6,6 +6,8 @@ use App\Http\Requests\ProductRequest;
 use App\Http\Controllers\Controller;
 use App\Models\Subcategory;
 use App\Models\Category;
+use App\Models\Category\Category as CategoryCategory;
+use App\Models\Category\Subcategory as CategorySubcategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Services\ProductService;
@@ -46,7 +48,7 @@ class ProductController extends Controller
 
     public function dashboard()
     {
-        $categories = Category::all();
+        $categories = CategoryCategory::all();
         return view('shop.backend.admin', compact('categories'));
     }
 
@@ -95,7 +97,7 @@ class ProductController extends Controller
     public function create()
     {
 
-        $subcategories = Subcategory::all(); // لجلب الفئات الفرعية
+        $subcategories = CategorySubcategory::all(); // لجلب الفئات الفرعية
         return view('admin.products.create', compact('subcategories'));
     }
 

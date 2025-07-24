@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Category;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\Category\Subcategory;
 class Category extends Model
 {
     use HasFactory;
     protected $fillable = [
+      'id',
       'name',
       'slug',
       'description',

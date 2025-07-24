@@ -9,7 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Laratrust\Traits\HasRolesAndPermissions;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -20,33 +20,69 @@ class AuthenticatedSessionController extends Controller
     {
         return view('auth.login');
     }
+    // public function createAdmin(): View
+    // {
+    //     return view('auth.admin-Login');
+    // }
 
     /**
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        $credentials = $request->only('email', 'password');
+    $request->session()->regenerate();
 
-        $request->session()->regenerate();
-
-        // إذا كان المستخدم غير مفعل أو لم يتم التحقق من بريده الإلكتروني
-        if (!auth()->check()) {
-            return redirect()->route('login')->withErrors(['email' => 'خطأ في تسجيل الدخول.']);
-        }
-
-        // متوافق مع جميع الإصدارات: استخدم accessor مباشرة على الـ collection
-        if (auth()->user()->roles && auth()->user()->roles->where('name', 'admin')->count() > 0) {
-            return redirect()->route('admin.dashboard');
-        }
-
-        // المستخدم العادي
-        return redirect()->intended(RouteServiceProvider::HOME);
+    if (!Auth::attempt($credentials)) {
+        return redirect()->route('login')->withErrors([
+            'email' => 'Invalid login credentials',
+        ]);
     }
+
+        /** @var User $user */
+    $user = Auth::user();
+
+    if ($user->hasRole('admin')) {
+        return redirect()->intended(RouteServiceProvider::DASHBOARD);
+        }
+
+
+    return redirect()->intended(RouteServiceProvider::HOME);
+
+    }
+
+
+
+
 
     /**
      * Destroy an authenticated session.
      */
+
+    // public function storeAdmin(LoginRequest $request): RedirectResponse
+    // {
+    //     $credentials = $request->only('email', 'password');
+    //     $request->session()->regenerate();
+    //     if (!Auth::guard('admin')->attempt($credentials)) {
+    //         return redirect()->route('login.admin-Login')->withErrors([
+    //             'email' => 'Invalid login credentials',
+    //         ]);
+    //     }
+
+    //     /** @var User $user */
+    //     $user = Auth::guard('admin')->user();
+
+    //     if (!$user->hasRole('admin')) {
+    //         Auth::guard('admin')->logout();
+    //         return redirect()->route('login')->withErrors([
+    //             'email' => 'Access is restricted. Please use the user login page to sign in',
+    //         ]);
+    //     }
+
+
+
+    //     return redirect()->intended(RouteServiceProvider::DASHBOARD);
+    // }
     public function destroy(Request $request): RedirectResponse
     {
         Auth::guard('web')->logout();
@@ -57,7 +93,17 @@ class AuthenticatedSessionController extends Controller
 
         return redirect('/');
     }
+
+    public function destroyAdmin(Request $request): RedirectResponse
+    {
+
+        Auth::guard('admin')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect('login');
+    }
 }
+
 
 // عند ربط المستخدم مع الدور (role) استخدم:
 // $user->roles()->syncWithoutDetaching([$role->id]);
