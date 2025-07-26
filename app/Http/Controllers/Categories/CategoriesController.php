@@ -9,9 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category\Category;
 use App\Models\Category\Subcategory;
 use App\Http\Requests\SubcategoryRequest;
-use Yajra\DataTables\Facades\DataTables;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Validation\Rule;
+
 
 
 
@@ -80,7 +78,7 @@ class CategoriesController extends Controller
         // حفظ الفئة
         $category->save();
 
-        return redirect()->route('admin.categories.index')->with('success', 'Category added successfully.');
+        return redirect()->route('categories.index')->with('success', 'Category added successfully.');
     }
 
     // تعديل تصنيف رئيسي

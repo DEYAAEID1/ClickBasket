@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\ProductImage;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Category\Category;
+use App\Models\Category\Subcategory;
 
 class Product extends Model
 {
@@ -52,4 +53,5 @@ class Product extends Model
     {
         return $this->hasMany(ProductImage::class);
     }
+    
 }

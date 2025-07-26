@@ -20,8 +20,8 @@
 
         <!-- Product Management -->
         <li>
-            <a href="javascript:;" class="menu-item" id="product-management-link">
-                <div class="parent-icon"><i class='bx bx-category'></i></div>
+            <a href="{{route('product.index')}}" class="menu-item" id="productmanagementlink">
+
                 <div class="menu-title">Product Management</div>
             </a>
 
@@ -30,8 +30,8 @@
         <!-- Manage Categories -->
         <li>
             <a href="{{ route('categories.index') }}" id="manageCategoriesLink">
-    <i class="Category"></i> Manage Categories
-</a>
+                <i class="Category"></i> Manage Categories
+            </a>
 
         </li>
 

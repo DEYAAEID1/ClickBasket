@@ -1,11 +1,10 @@
-
-
 <?php
 
 namespace App\Services;
 
-use App\Models\Product;
-use App\Models\Subcategory;
+use App\Models\Category\Subcategory ;
+use App\Models\Product\Product ;
+
 use Illuminate\Support\Facades\Log;
 
 class ProductService
@@ -104,6 +103,7 @@ class ProductService
                     $product->gallery()->create(['image' => $file->store('products/gallery', 'public')]);
                 }
             }
+            
         }
 
         $product->save();

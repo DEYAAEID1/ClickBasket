@@ -102,6 +102,7 @@ class CategoryDataTable extends DataTable
 
     /**
      * Get the filename for export.
+     *      * @return string
      */
     protected function filename(): string
     {

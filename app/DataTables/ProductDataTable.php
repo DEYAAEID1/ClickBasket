@@ -17,48 +17,57 @@ class ProductDataTable extends DataTable
 {
 
     /**
+     *@return \Yajra\DataTables\EloquentDataTable
      * @param QueryBuilder $query Results from query() method.
-     * @return EloquentDataTable
      * 
      */
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
             ->setRowId('id')
-             ->addColumn('action', function ($row) {
+            ->addColumn('subcategory_name', function ($row) {
+
+                return $row->subcategory ? $row->subcategory->name : 'غير معروف';
+            })
+            ->addColumn('short_description', function ($row) {
+                return $row->short_description;
+            })
+            ->addColumn('action', function ($row) {
                 return '
-            <button type="button" class="btn btn-primary btn-eit"
-            id="btn_edit_product"
-            data-product-id="' . $row->id . '"
-            data-bs-toggle="modal" data-bs-target="#editModalProduct">
-            Edit
-            </button>
-                
-                ';
-                '<button type="button" class="btn btn-danger btn_delete_product"
-                  id="btn_delete_product"
-                  
-                   data-product-id="' . $row->id . '"
-             data-bs-toggle="modal" data-bs-target="#deleteModalProduct">
-           Delete
+            <button type="button" class="btn btn-primary btn-edit"
+        id="btn_edit_product"
+        data-product-id="' . $row->id . '"
+        data-bs-toggle="modal" data-bs-target="#editModalproduct">
+              Edit
+           </button>
+            ' .
+
+
+        '<button type="button" class="btn btn-danger btn_delete_product"
+         id="btn_delete_product"
+           data-product-id="' . $row->id . '"
+           data-id={{ $id }}
+             data-bs-toggle="modal" data-bs-target="#deleteModalproduct">
+              Delete
             </button>';
-            })->removeColumn(['action']);
+            })->rawColumns(['action']);
     }
 
     /**
      * Get query source for dataTable.
      *
      * @param Product $model
-     * @return QueryBuilder
+     * @return \Illuminate\Database\Eloquent\Builder
      */
 
 
     public function query(Product $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery('subcategory');
     }
 
-    /**
+
+     /**
      * Get the columns for the DataTable.
      *
      * @return array
@@ -67,19 +76,21 @@ class ProductDataTable extends DataTable
     {
         return [
 
-            Column::computed('action')
-                ->exportable(false)
-                ->printable(false)
-                ->width(200)
-                ->addClass('text-center'),
             Column::make('id'),
             Column::make('name'),
             Column::make('description'),
+            Column::make('subcategory_name'),
             Column::make('price'),
-            Column::make('updated_at'),
+            Column::make('is_active'),
+            Column::computed('action')
+                ->exportable(false)
+                ->printable(false)
+                ->width(60)
+                ->addClass('text-center'),
         ];
     }
-     /**
+
+    /**
      * Optional method if you want to use the html builder.
      *
      * @return \Yajra\DataTables\Html\Builder
@@ -87,12 +98,21 @@ class ProductDataTable extends DataTable
     public function html(): HtmlBuilder
     {
         return $this->builder()
-                    ->setTableId('product-table')
-                    ->columns($this->getColumns())
-                    ->minifiedAjax()
-                    ->dom('Bfrtip')
-                    ->orderBy(1);
+            ->setTableId('product-table')
+            ->columns($this->getColumns())
+            ->minifiedAjax()
+            ->dom('Bfrtip')
+            ->orderBy(1)
+            ->selectStyleSingle()
+            ->buttons([
+                Button::make([
+                    'text' => 'Reload',
+                    'action' => 'function (e, dt, node, config) { dt.ajax.reload(); }',
+                    'className' => 'btn btn-secondary'
+                ])
+            ]);
     }
+   
 
     /**
      * Get the filename for export.
@@ -104,8 +124,3 @@ class ProductDataTable extends DataTable
         return 'Product_' . date('YmdHis');
     }
 }
-
-
-
-    
-

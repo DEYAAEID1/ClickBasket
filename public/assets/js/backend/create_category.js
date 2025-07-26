@@ -1,13 +1,13 @@
 $(document).ready(function() {
     // عند الضغط على زر "Save changes" في الـ Modal
     $('#createCategoryForm').submit(function(e) {
-        e.preventDefault(); // منع إرسال النموذج بشكل تقليدي
+        e.preventDefault(); 
 
         var formData = $(this).serialize(); // جمع بيانات النموذج
 
         // إرسال بيانات الفئة باستخدام AJAX
         $.ajax({
-            url: '/categories', // المسار الذي سيتم إرسال البيانات إليه
+            url: 'admin/categories/content', // المسار الذي سيتم إرسال البيانات إليه
             method: 'POST',
             data: formData,
             success: function(response) {

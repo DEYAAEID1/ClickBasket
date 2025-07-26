@@ -3,13 +3,14 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\User\UserDashboardController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Backend\Admin\ProductController;
+
 use App\Http\Controllers\ShoppingCartController;
 use App\Models\Product\Product;
 use App\Http\Controllers\CategoriesController;
 use app\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\DataTables\ProductDataTable;
 use App\DataTables\CategoryDataTable;
+use App\Http\Controllers\Product\ProductController as ProductProductController;
 use App\Http\Controllers\Categories\CategoriesController as CategoriesCategoriesController;
 
 /*
@@ -48,7 +49,7 @@ Route::middleware('auth')->group(function () {
 
     // Route to get products by subcategory via AJAX
 
-    Route::get('/products/by-subcategory/{subcategory_id}', [ProductController::class, 'getProductsBySubcategory'])->name('products.by_subcategory');
+    Route::get('/products/by-subcategory/{subcategory_id}', [ProductProductController::class, 'getProductsBySubcategory'])->name('products.by_subcategory');
     Route::get('/cart/add', [ShoppingCartController::class, 'index'])->name('shop.backend.cart');
     Route::post('/cart/add', [ShoppingCartController::class, 'addItem'])->name('cart.add');
 
@@ -57,17 +58,23 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('auth', 'role:admin')->group(function () {
         Route::get('/admin/dashboard', [UserDashboardController::class, 'AdminDashboard'])->name('admin.dashboard');
-        Route::get('admin/product/content', [ProductDataTable::class, 'ajax'])->name('product.content');
+
+        Route::get('admin/product/content', [ProductProductController::class, 'index'])->name('product.index');
+        Route::POST('admin/product/create', [ProductProductController::class, 'store'])->name('product.create');
+        Route::post('admin/product/content', [ProductProductController::class, 'store']);
+        Route::get('product/{product}/edit', [ProductProductController::class, 'edit'])->name('product.edit');
+        Route::delete('product/{product}', [ProductProductController::class, 'delete'])->name('product.destroy');
+
         Route::get('admin/categories/content', [CategoriesCategoriesController::class, 'index'])->name('categories.index');
         Route::delete('categories/{category}', [CategoriesCategoriesController::class, 'destroy'])->name('categories.destroy');
         Route::put('admin/categories/content', [CategoriesCategoriesController::class, 'storeCategory']);
 
-        Route::get('/products/search', [ProductController::class, 'searchProduct'])->name('admin.products.search');
-        Route::get('/dashboard/products/create', [ProductController::class, 'create'])->name('admin.products.create');
-        Route::post('/dashboard/products/store', [ProductController::class, 'store'])->name('admin.products.store');
-        Route::post('/products/edit/delete', [ProductController::class, 'editDeleteProduct'])->name('admin.products.edit_delete');
-        Route::put('/products/{id}', [ProductController::class, 'updateProduct'])->name('admin.products.update');
-        Route::delete('/products/{id}', [ProductController::class, 'deleteProduct'])->name('admin.products.delete');
+        // Route::get('/products/search', [ProductController::class, 'searchProduct'])->name('admin.products.search');
+        // Route::get('/dashboard/products/create', [ProductController::class, 'create'])->name('admin.products.create');
+        // Route::post('/dashboard/products/store', [ProductController::class, 'store'])->name('admin.products.store');
+        // Route::post('/products/edit/delete', [ProductController::class, 'editDeleteProduct'])->name('admin.products.edit_delete');
+        // Route::put('/products/{id}', [ProductController::class, 'updateProduct'])->name('admin.products.update');
+        // Route::delete('/products/{id}', [ProductController::class, 'deleteProduct'])->name('admin.products.delete');
     });
 
     // Route::prefix('categories')->group(function () {

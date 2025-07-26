@@ -1,19 +1,97 @@
 <?php
 
-namespace App\Http\Controllers\Backend\Admin;
+namespace App\Http\Controllers\Product;
 
-use App\Http\Requests\ProductRequest;
+use App\DataTables\ProductDataTable;
+
 use App\Http\Controllers\Controller;
-use App\Models\Subcategory;
-use App\Models\Category;
+use App\Http\ProductRequest\ProductRequest as ProductRequestProductRequest;
+use App\Http\Requests\ProductRequest;
 use App\Models\Category\Category as CategoryCategory;
 use App\Models\Category\Subcategory as CategorySubcategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use App\Services\ProductService;
+use App\Models\Product\Product;
 
 class ProductController extends Controller
 {
+
+
+    public function index(ProductDataTable $dataTable)
+    {
+        $products = Product::latest()
+            ->with('subcategory')
+
+            ->get();
+        $subcategories = CategorySubcategory::all();
+        return $dataTable->render('backend.pages.product.product', compact('products', 'subcategories'));
+    }
+
+
+
+
+    public function store(Request $request, ProductService $productService)
+    {
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:50',
+            'description' => 'required|string|max:255',
+            'short_description' => 'nullable|string|max:100',
+            'price' => 'required|numeric',
+            'cost_price' => 'nullable|numeric',
+            'stock_quantity' => 'nullable|integer',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10000',
+            'gallery' => 'nullable|array',
+            'gallery.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'category_id' => 'nullable|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:subcategories,id',
+            'is_active' => 'nullable|boolean',
+        ]);
+        $subcategory = CategorySubcategory::find($validated['subcategory_id']);
+
+
+        if (!$subcategory) {
+            return redirect()->back()->withErrors(['subcategory_id' => 'الفئة الفرعية غير موجودة']);
+        }
+
+        $validated['category_id'] = $subcategory->category_id;
+
+        $subcategories = CategorySubcategory::all();
+
+
+        $files = [
+            'image' => $request->file('image'),
+            'gallery' => $request->file('gallery'),
+        ];
+
+        $product = $productService->storeProduct($validated, $files);
+
+        return redirect()->route('product.index')->with('success', 'Product added successfully.');
+    }
+
+
+
+
+    public function edit($productId)
+    {
+        $product = Product::find($productId);
+
+        if (!$product) {
+            return response()->json(['message' => 'Product not found'], 404);
+        }
+     $subcategoryName = $product->subcategory ? $product->subcategory->name : null;
+
+        return response()->json([
+            'id' => $product->id,
+            'name' => $product->name,
+            'description' => $product->description,
+            'price' => $product->price,
+             'subcategory_name' => $subcategoryName
+        ]);
+    }
+
+
     public function getProductsBySubcategory($subcategory_id)
     {
         // Create an instance of the ProductService
@@ -53,6 +131,11 @@ class ProductController extends Controller
     }
 
 
+    public function delete($id, ProductService $productService)
+    {
+        $product = $productService->deleteProductById($id);
+        return response()->json(['message' => 'Product deleted successfully', 'product' => $product]);
+    }
 
     //receives a request from the user (Request) containing the product ID
     //sends the product ID to the ProductService class to search for the product in the database.
@@ -69,7 +152,7 @@ class ProductController extends Controller
         }
     }
 
-    public function updateProduct(ProductRequest $request, $id, ProductService $productService)
+    public function updateProduct(ProductRequestProductRequest $request, $id, ProductService $productService)
     {
         $validated = $request->validated();  // التحقق من المدخلات
 
@@ -88,33 +171,11 @@ class ProductController extends Controller
 
 
 
-    public function deleteProduct($id, ProductService $productService)
-    {
-        $product = $productService->deleteProductById($id);
-        return response()->json(['message' => 'Product deleted successfully', 'product' => $product]);
-    }
 
     public function create()
     {
 
         $subcategories = CategorySubcategory::all(); // لجلب الفئات الفرعية
         return view('admin.products.create', compact('subcategories'));
-    }
-
-
-    public function store(ProductRequest $request, ProductService $productService)
-    {
-        $validated = $request->validated();  // التحقق من المدخلات
-
-        // التعامل مع الملفات بعد التحقق
-        $files = [
-            'image' => $request->file('image'),
-            'gallery' => $request->file('gallery'),
-        ];
-
-        // إضافة المنتج باستخدام الخدمة
-        $product = $productService->storeProduct($validated, $files);
-
-        return response()->json(['success' => 'Product added successfully!', 'product' => $product]);
     }
 }

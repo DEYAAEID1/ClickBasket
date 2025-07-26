@@ -1,12 +1,17 @@
 $(document).ready(function() {
     // عندما يتم النقر على رابط "Manage Categories"
     $('#manageCategoriesLink').click(function() {
-        loadContent('categories');  // تحميل جدول الفئات
+        loadContent('categories');  
+    });
+    $('#productmanagementlink').click(function() {
+        loadContent('product ');  
     });
 
-    // دالة لتحميل المحتوى الديناميكي بناءً على نوع الجدول
+
+
+    
     function loadContent(contentType) {
-        // إخفاء المحتوى الحالي في الـ main
+        
         $('#wlc-page-container').fadeOut(function() {
             // استدعاء AJAX لتحميل المحتوى المناسب بناءً على نوع المحتوى
             $.ajax({
@@ -21,6 +26,16 @@ $(document).ready(function() {
                         if ($.fn.DataTable) {
                             $('#dynamic-content table').DataTable({
                                 // إضافة خيارات مخصصة إذا كنت بحاجة إلى ذلك
+                                paging: true,
+                                searching: true,
+                                ordering: true,
+                                responsive: true
+                            });
+                        }
+                    }
+                    if (contentType === 'product') {
+                        if ($.fn.DataTable) {
+                            $('#dynamic-content table').DataTable({
                                 paging: true,
                                 searching: true,
                                 ordering: true,

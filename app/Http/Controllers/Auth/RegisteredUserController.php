@@ -28,7 +28,7 @@ class RegisteredUserController extends Controller
 
     public function store(RegisterUserRequest $request): RedirectResponse
     {
-        $validated = $request->validated(); // نستخرج القيم المُتحقق منها باستخدام FormRequest
+        $validated = $request->validated(); 
 
         // منطق التسجيل هنا باستخدام البيانات المُتحقق منها
         User::create([
