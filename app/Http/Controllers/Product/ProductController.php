@@ -6,7 +6,6 @@ use App\DataTables\ProductDataTable;
 
 use App\Http\Controllers\Controller;
 use App\Http\ProductRequest\ProductRequest as ProductRequestProductRequest;
-use App\Http\Requests\ProductRequest;
 use App\Models\Category\Category as CategoryCategory;
 use App\Models\Category\Subcategory as CategorySubcategory;
 use Illuminate\Http\Request;
@@ -90,8 +89,16 @@ class ProductController extends Controller
              'subcategory_name' => $subcategoryName
         ]);
     }
-
-
+    
+    public function delete($id, ProductService $productService)
+    {
+        $product = $productService->deleteProductById($id);
+        
+ return response()->json([
+        'message' => 'Product deleted successfully',
+        'product_id' => $id
+    ]);    }
+    
     public function getProductsBySubcategory($subcategory_id)
     {
         // Create an instance of the ProductService
@@ -109,6 +116,7 @@ class ProductController extends Controller
 
             // Return a generic error message if an exception occurs
             return response()->json(['error' => 'An error occurred while fetching products.'], 500);
+            
         }
     }
 
@@ -131,11 +139,6 @@ class ProductController extends Controller
     }
 
 
-    public function delete($id, ProductService $productService)
-    {
-        $product = $productService->deleteProductById($id);
-        return response()->json(['message' => 'Product deleted successfully', 'product' => $product]);
-    }
 
     //receives a request from the user (Request) containing the product ID
     //sends the product ID to the ProductService class to search for the product in the database.

@@ -1,5 +1,5 @@
 <!-- Delete product Modal -->
-<div class="modal fade" id="deleteModalproduct" tabindex="-1" aria-labelledby="deleteModalproductLabel"  role="dialog" >
+<div class="modal fade" id="deleteModalproduct" tabindex="-1" aria-labelledby="deleteModalproductLabel" aria-hidden="true"  >
     <div class="modal-dialog" style="max-width: 50%;">
         <div class="modal-content">
             <div class="modal-header">
