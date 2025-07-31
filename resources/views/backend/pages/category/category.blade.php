@@ -22,9 +22,5 @@
 
 @push('scripts')
 {!! $dataTable->scripts() !!}
-<script src="{{asset('assets\js\backend\dashboard.js')}}"> </script>
-<script src="{{asset('assets\js\backend\edit_category.js')}}"> </script>
-<script src="{{asset('assets\js\backend\delete_category.js')}}"> </script>
-
 
 @endpush

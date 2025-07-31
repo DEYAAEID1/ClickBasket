@@ -64,10 +64,14 @@ Route::middleware('auth')->group(function () {
         Route::post('admin/product/content', [ProductProductController::class, 'store']);
         Route::get('product/{product}/edit', [ProductProductController::class, 'edit'])->name('product.edit');
         Route::delete('product/{product}', [ProductProductController::class, 'delete'])->name('product.destroy');
-
+        
         Route::get('admin/categories/content', [CategoriesCategoriesController::class, 'index'])->name('categories.index');
         Route::delete('categories/{category}', [CategoriesCategoriesController::class, 'destroy'])->name('categories.destroy');
         Route::put('admin/categories/content', [CategoriesCategoriesController::class, 'storeCategory']);
+        
+        Route::put('subcategory/update', [CategoriesCategoriesController::class, 'updateSubcategory'])->name('subcategories.update');
+        Route::post('admin/subcategories/content', [CategoriesCategoriesController::class, 'storeSubcategory'])->name('subcategories.create');
+        Route::get('admin/subcategories/content/{category}', [CategoriesCategoriesController::class, 'indexSubcategories'])->name('subcategories.index');
 
         // Route::get('/products/search', [ProductController::class, 'searchProduct'])->name('admin.products.search');
         // Route::get('/dashboard/products/create', [ProductController::class, 'create'])->name('admin.products.create');
@@ -115,8 +119,6 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// Route::get('/categories/{id}/edit', [CategoriesController::class, 'editcategory']);
-// Route::delete('/categories/{id}', [CategoriesController::class, 'destroyCategory']);
 
 
 Route::get('/admin', function () {

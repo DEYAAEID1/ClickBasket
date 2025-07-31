@@ -5,7 +5,7 @@ $('#btn_edit_product').click(function() {
         url: '/product/' + productId + '/edit',  
         method: 'GET',
         success: function(response) {
-            console.log(response);
+           
             $('#editModalproduct').find('#editproductForm #name ').val(response.name);
             $('#editModalproduct').find('#editproductForm #description').val(response.description);
             $('#editModalproduct').find('#editproductForm #price').val(response.price);

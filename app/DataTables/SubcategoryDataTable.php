@@ -2,8 +2,7 @@
 
 namespace App\DataTables;
 
-
-use App\Models\Category\Category;
+use App\Models\Category\Subcategory;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -13,62 +12,56 @@ use Yajra\DataTables\Html\Editor\Editor;
 use Yajra\DataTables\Html\Editor\Fields;
 use Yajra\DataTables\Services\DataTable;
 
-class CategoryDataTable extends DataTable
+class SubcategoryDataTable extends DataTable
 {
+
+    public $category_id;
     /**
      * Build the DataTable class.
-     * @return \Yajra\DataTables\EloquentDataTable
+     *
      * @param QueryBuilder $query Results from query() method.
      */
-    public function dataTable($query): EloquentDataTable
+    public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-        ->setRowId('id')
-        ->addColumn('action', function ($row) {
-            return '
-                 <!-- Edit Button -->
-                <button type="button" class="btn btn-primary btn_edit" 
-                    id="btn_edit_category"
-                    data-category-id="' . $row->id . '" 
-                    data-bs-toggle="modal" 
-                    data-bs-target="#editModalCategory">
-                    Edit
-                </button>' . 
-                ' <!-- Delete Button -->
-                <button type="button" class="btn btn-danger btn_delete_category"
-                    data-category-id="' . $row->id . '"
-                    id="btn_delete_category"
-                    data-bs-toggle="modal"
-                    data-bs-target="#deleteModalCategory">
-                    Delete
-                </button>'. 
-                ' <!-- load subcategory -->
-                <button type="button" class="btn btn-primary btn_subcategory" 
-                    id="btn_subcategory"
-                    data-category-id="' . $row->id . '" 
-                  onclick="window.location.href = \'/admin/subcategories/content/' . $row->id . '\'">
-                    subcategory
-                </button>'
-                ;
-        })
-        ->rawColumns(['action']);
+            ->setRowId('id')
+            ->addColumn('action', function ($row) {
+                return '
+                     <!-- Edit Button -->
+                    <button type="button" class="btn btn-primary btn_edit" 
+                        id="btn_edit_subcategory"
+                        data-subcategory-id="' . $row->id . '" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#editModalSubcategory">
+                        Edit
+                    </button>' .
+                    ' <!-- Delete Button -->
+                    <button type="button" class="btn btn-danger btn_delete_subcategory"
+                        data-subcategory-id="' . $row->id . '"
+                        id="btn_delete_subcategory" 
+                        data-bs-toggle="modal"
+                    data-bs-target="#deleteModalSubcategory"
+                        > Delete </button>';
+            })->rawColumns(['action']);
     }
-
-
-
+    
     /**
-     * @param Category $model
+     * Get query source of dataTable.
+     *
+     * @param Subcategory $model
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function query(Category $model): QueryBuilder
+    public function query(Subcategory $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()->where('category_id', $this->category_id);
     }
 
     /**
      * Optional method if you want to use the html builder.
+     *
+     * @return \Yajra\DataTables\Html\Builder
      */
-    public function html(): HtmlBuilder
+     public function html(): HtmlBuilder
     {
         return $this->builder()
                     ->setTableId('category-table')
@@ -92,28 +85,32 @@ class CategoryDataTable extends DataTable
     }
 
     /**
+     * Get the dataTable columns definition.
+     *
      * @return array
      */
     public function getColumns(): array
     {
-        return [
+         return [
             Column::make('id'),
             Column::make('name'),
             Column::make('description'),            
             Column::computed('action')
                   ->exportable(true)
                   ->printable(true)
-                  ->width(60)
+                  ->width(120)
                   ->addClass('text-center'),
         ];
     }
+    
 
     /**
-     * Get the filename for export.
-     *      * @return string
+     * Get filename for export.
+     *
+     * @return string
      */
     protected function filename(): string
     {
-        return 'Category_' . date('YmdHis');
+        return 'Subcategory_' . date('YmdHis');
     }
 }
