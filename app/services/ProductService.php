@@ -20,7 +20,7 @@ class ProductService
         }
         // Return all products for the specified subcategory, ensuring they are active,
         // and include the related category information using eager loading.
-        return Product::with('category')
+        return Product::with('subcategory')
             ->where('subcategory_id', $subcategory_id)
             ->where('is_active', 1)
             ->get();

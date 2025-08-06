@@ -7608,7 +7608,7 @@ h6.post-title {
   min-height: 50px;
   border: 1px solid #ececec;
   border-right: none;
-  width: 140px;
+  width: auto;
   padding: 3px 35px 3px 20px;
   border-radius: 4px 0 0 4px;
   background-color: #fff;
@@ -7629,7 +7629,7 @@ h6.post-title {
 
 .search-style-2 form input {
   width: 100%;
-  max-width: 683px;
+  max-width: 100%;
   font-size: 14px;
   background-image: url(../imgs/theme/icons/search.png);
   background-repeat: no-repeat;

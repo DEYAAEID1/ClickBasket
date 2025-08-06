@@ -17,7 +17,7 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/shop/frontend/user';
+    public const HOME = '/frontend/pages/home';
     public const DASHBOARD = '/admin/dashboard'; // هذا هو مسار لوحة تحكم المشرف (Admin Dashboard)
 
 

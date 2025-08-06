@@ -15,7 +15,7 @@ $(document).ready(function() {
            
                 $('#createSubcategoryModal').modal('hide');
 
-                alert('Category created successfully!');
+                alert('Subcategory Created successfully!');
 
                  $('#SubcategoryDataTable ').DataTable().ajax.reload();
             },

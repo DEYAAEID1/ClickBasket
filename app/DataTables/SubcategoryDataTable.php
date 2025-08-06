@@ -24,6 +24,7 @@ class SubcategoryDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
+
             ->setRowId('id')
             ->addColumn('action', function ($row) {
                 return '
@@ -32,7 +33,7 @@ class SubcategoryDataTable extends DataTable
                         id="btn_edit_subcategory"
                         data-subcategory-id="' . $row->id . '" 
                         data-bs-toggle="modal" 
-                        data-bs-target="#editModalSubcategory">
+                       >
                         Edit
                     </button>' .
                     ' <!-- Delete Button -->
@@ -43,6 +44,10 @@ class SubcategoryDataTable extends DataTable
                     data-bs-target="#deleteModalSubcategory"
                         > Delete </button>';
             })->rawColumns(['action']);
+
+
+
+
     }
     
     /**

@@ -14,7 +14,7 @@ class UserDashboardController extends Controller
     public function index()
     {
         $categories = Category::with('subcategories')->whereHas('subcategories')->get();
-        return view('shop.frontend.user', compact('categories'));
+        return view('frontend.pages.home', compact('categories'));
     }
 
     public function Adminlogin()

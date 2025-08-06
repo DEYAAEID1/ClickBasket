@@ -6,6 +6,7 @@ use App\DataTables\CategoryDataTable;
 use App\DataTables\SubcategoryDataTable;
 use App\Http\Requests\Frontend\CategoryRequest;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
 use App\Models\Category\Category;
 use App\Models\Category\Subcategory;
@@ -89,6 +90,22 @@ class CategoriesController extends Controller
         $dataTable->category_id = (int)$id;
         return $dataTable->render('backend.pages.subcategories.subcategory', compact('subcategory', 'categories'));
     }
+    public function getSubcategories($id)
+    {
+
+        $subcategory = Subcategory::find($id);
+
+        if ($subcategory) {
+            return response()->json([
+                'name' => $subcategory->name,
+                'description' => $subcategory->description,
+                'category_id' => $subcategory->category_id,
+                'image' => $subcategory->image ? asset('storage/' . $subcategory->image) : null
+            ]);
+        } else {
+            return response()->json(['error' => 'Subcategory not found'], 404);
+        }
+    }
     public function updateSubcategory(SubcategoryRequest $request, $id)
     {
         $validated = $request->validated();
@@ -109,15 +126,23 @@ class CategoriesController extends Controller
         return redirect()->route('subcategories.index')->with('success', 'Subcategory updated successfully.');
     }
 
-    public function storeSubcategory(SubcategoryRequest $request)
+    public function storeSubcategory(Request  $request)
     {
 
-        $validated = $request->validated();
+        $validated = $request->validate([
+            'category_id' => 'required|exists:categories,id',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string|max:500',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+
+        ]);
+
         $subcategory = new Subcategory([
             'category_id' => $request->category_id,
             'name' => $request->name,
             'description' => $request->description,
         ]);
+
 
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('subcategories', 'public');
@@ -126,7 +151,11 @@ class CategoriesController extends Controller
 
         $subcategory->save();
         $category_id = $request->category_id;
-        return redirect()->route('subcategories.index',  ['category' => $category_id]);
+        return response()->json([
+            'success' => true,
+            'category_id' => $request->category_id,
+            'message' => 'Subcategory created successfully!'
+        ]);
     }
 
     public function destroySubcategory($id)
@@ -171,13 +200,6 @@ class CategoriesController extends Controller
         $category = Category::findOrFail($id);
         $category->delete();
         return redirect()->back()->with('success', 'Category deleted successfully.');
-    }
-    public function getSubcategories($categoryid)
-    {
-
-        $subcategories = Subcategory::where('category_id', $categoryid)->get();
-
-        return response()->json(['subcategories' => $subcategories]);
     }
 
     public function editcategory($id)

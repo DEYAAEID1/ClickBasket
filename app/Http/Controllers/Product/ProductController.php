@@ -120,6 +120,11 @@ class ProductController extends Controller
         }
     }
 
+    public function show(Product $product)
+    {
+        return response()->json(['product' => $product]);
+    }
+
 
     //receives a request from the user (Request) containing the product ID
     //sends the product ID to the ProductService class to search for the product in the database.

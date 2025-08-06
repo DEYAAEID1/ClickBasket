@@ -17,7 +17,7 @@
                             <div class="card-body">
                                 <!-- ================= Edit Subcategory Form ================= -->
                                 <form id="editSubcategoryForm" method="POST">
-                                <!-- CSRF Token for Security -->
+                                    <!-- CSRF Token for Security -->
                                     @csrf
                                     @method('PUT')
 
@@ -46,7 +46,10 @@
                                         <!-- ================= Image ================= -->
                                         <label style="color: rgb(0, 60, 255); margin-bottom:5px">Image</label>
                                         <input class="form-control mb-3" type="file" name="image" accept="image/*">
-
+                                        <!-- Image Preview -->
+                                        <div id="image-preview">
+                                            <img id="subcategory-image" src="" alt="Subcategory Image" style="max-width: 100%; height: auto; display: none;">
+                                        </div>
                                         <!-- ================= Modal Footer ================= -->
                                         <div class="modal-footer">
                                             <!-- Close Button -->

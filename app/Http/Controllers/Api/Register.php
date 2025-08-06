@@ -20,11 +20,11 @@ function register(ApiRegister $request)
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
-                'password' => Hash::make($request->email),
+                'password' => Hash::make($request->password),
                 'phone' => $request->phone,
                 'address' => $request->address,
                 'city' => $request->city,
-                'postal_code' => $request->city,
+                'postal_code' => $request->postal_code,
             ]);
             $user->addRole('user');
 
@@ -39,7 +39,7 @@ function register(ApiRegister $request)
         } catch (\Throwable $th) {
             DB::rollBack();
 
-            return response()->json()([
+            return response()->json([
                 'status' => false,
                 'message' => 'Registration failed.',
                 'error' => $th->getMessage()

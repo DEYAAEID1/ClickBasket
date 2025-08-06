@@ -1,17 +1,14 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\User\UserDashboardController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\ShoppingCartController;
 use App\Models\Product\Product;
-use App\Http\Controllers\CategoriesController;
 use app\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\DataTables\ProductDataTable;
-use App\DataTables\CategoryDataTable;
 use App\Http\Controllers\Product\ProductController as ProductProductController;
 use App\Http\Controllers\Categories\CategoriesController as CategoriesCategoriesController;
+use App\Http\Controllers\User\ProfileController as UserProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,31 +28,36 @@ use App\Http\Controllers\Categories\CategoriesController as CategoriesCategories
 
 Route::get('/', function () {
     $products = Product::with('category')->orderBy('id')->get();
-    return view('shop.frontend.landing', compact('products'));
+    return view('frontend.landing', compact('products'));
 })->name('landing');
 
 
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+/*----------------------User----------------------*/
+/*-------------------------------------------------*/
 Route::middleware('auth')->group(function () {
 
-    // صفحة الداشبورد الرئيسية للمستخدم
-    Route::get('/shop/frontend/user', [UserDashboardController::class, 'index'])->middleware(['verified'])
+    Route::get('/frontend/pages/home', [UserDashboardController::class, 'index'])->middleware(['verified'])
         ->name('user.dashboard');
 
-    // صفحة تعديل الحساب في المسار المطلوب
-    Route::get('/shop/frontend/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/shop/frontend/profile', [ProfileController::class, 'update'])->name('profile.update');
-
-    // Route to get products by subcategory via AJAX
-
     Route::get('/products/by-subcategory/{subcategory_id}', [ProductProductController::class, 'getProductsBySubcategory'])->name('products.by_subcategory');
+
+    Route::get('/products/{product}', [ProductProductController::class, 'show']);
+/*-------------------------------------------------*/
+
+
+
+    Route::get('/shop/frontend/profile', [UserProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/shop/frontend/profile', [UserProfileController::class, 'update'])->name('profile.update');
+
+
     Route::get('/cart/add', [ShoppingCartController::class, 'index'])->name('shop.backend.cart');
     Route::post('/cart/add', [ShoppingCartController::class, 'addItem'])->name('cart.add');
 
 
-
-
+    /*----------------------Admin----------------------*/
+    /*-------------------------------------------------*/
     Route::middleware('auth', 'role:admin')->group(function () {
         Route::get('/admin/dashboard', [UserDashboardController::class, 'AdminDashboard'])->name('admin.dashboard');
 
@@ -64,14 +66,15 @@ Route::middleware('auth')->group(function () {
         Route::post('admin/product/content', [ProductProductController::class, 'store']);
         Route::get('product/{product}/edit', [ProductProductController::class, 'edit'])->name('product.edit');
         Route::delete('product/{product}', [ProductProductController::class, 'delete'])->name('product.destroy');
-        
+
         Route::get('admin/categories/content', [CategoriesCategoriesController::class, 'index'])->name('categories.index');
         Route::delete('categories/{category}', [CategoriesCategoriesController::class, 'destroy'])->name('categories.destroy');
         Route::put('admin/categories/content', [CategoriesCategoriesController::class, 'storeCategory']);
-        
+
         Route::put('subcategory/update', [CategoriesCategoriesController::class, 'updateSubcategory'])->name('subcategories.update');
         Route::post('admin/subcategories/content', [CategoriesCategoriesController::class, 'storeSubcategory'])->name('subcategories.create');
         Route::get('admin/subcategories/content/{category}', [CategoriesCategoriesController::class, 'indexSubcategories'])->name('subcategories.index');
+        Route::get('/admin/subcategories/{subcategory}/edit', [CategoriesCategoriesController::class, 'getSubcategories']);
 
         // Route::get('/products/search', [ProductController::class, 'searchProduct'])->name('admin.products.search');
         // Route::get('/dashboard/products/create', [ProductController::class, 'create'])->name('admin.products.create');
